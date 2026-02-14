@@ -14,18 +14,39 @@ export interface MarketCoin {
 
 const COINGECKO_API = "https://api.coingecko.com/api/v3";
 
+// Coin logos from CoinGecko CDN
+const COIN_IMAGES: Record<string, string> = {
+  bitcoin: "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  ethereum: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  solana: "https://assets.coingecko.com/coins/images/4128/small/solana.png",
+  binancecoin: "https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png",
+  ripple: "https://assets.coingecko.com/coins/images/44/small/xrp-symbol-white-128.png",
+  cardano: "https://assets.coingecko.com/coins/images/975/small/cardano.png",
+  dogecoin: "https://assets.coingecko.com/coins/images/5/small/dogecoin.png",
+  "avalanche-2": "https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png",
+  chainlink: "https://assets.coingecko.com/coins/images/877/small/chainlink-new-logo.png",
+  polkadot: "https://assets.coingecko.com/coins/images/12171/small/polkadot.png",
+};
+
+// Generate realistic sparkline with trend + noise
+const genSparkline = (base: number, volatility: number, trend: number) =>
+  Array.from({ length: 168 }, (_, i) => {
+    const t = i / 168;
+    return base * (1 + trend * t + (Math.sin(i * 0.3) * 0.4 + Math.sin(i * 0.7) * 0.3 + Math.sin(i * 1.1) * 0.2 + (Math.random() - 0.5) * 0.1) * volatility);
+  });
+
 // Fallback data in case API is rate-limited
 const FALLBACK_DATA: MarketCoin[] = [
-  { id: "bitcoin", symbol: "btc", name: "Bitcoin", current_price: 97842.50, price_change_percentage_24h: 2.34, market_cap: 1930000000000, total_volume: 48000000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 95000 + Math.sin(i / 10) * 3000 + i * 15) } },
-  { id: "ethereum", symbol: "eth", name: "Ethereum", current_price: 3421.80, price_change_percentage_24h: -0.87, market_cap: 411000000000, total_volume: 19000000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 3300 + Math.sin(i / 12) * 200 + i * 0.5) } },
-  { id: "solana", symbol: "sol", name: "Solana", current_price: 187.45, price_change_percentage_24h: 5.12, market_cap: 91000000000, total_volume: 5400000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 170 + Math.sin(i / 8) * 20 + i * 0.1) } },
-  { id: "binancecoin", symbol: "bnb", name: "BNB", current_price: 612.30, price_change_percentage_24h: 1.45, market_cap: 89000000000, total_volume: 2100000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 590 + Math.sin(i / 10) * 30 + i * 0.12) } },
-  { id: "ripple", symbol: "xrp", name: "XRP", current_price: 2.41, price_change_percentage_24h: -1.23, market_cap: 138000000000, total_volume: 6700000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 2.3 + Math.sin(i / 9) * 0.15 + i * 0.0005) } },
-  { id: "cardano", symbol: "ada", name: "Cardano", current_price: 0.89, price_change_percentage_24h: 3.67, market_cap: 31000000000, total_volume: 1200000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 0.82 + Math.sin(i / 11) * 0.08 + i * 0.0003) } },
-  { id: "dogecoin", symbol: "doge", name: "Dogecoin", current_price: 0.324, price_change_percentage_24h: -2.11, market_cap: 47000000000, total_volume: 3400000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 0.31 + Math.sin(i / 7) * 0.03 + i * 0.00005) } },
-  { id: "avalanche-2", symbol: "avax", name: "Avalanche", current_price: 38.72, price_change_percentage_24h: 4.21, market_cap: 15800000000, total_volume: 890000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 35 + Math.sin(i / 10) * 4 + i * 0.02) } },
-  { id: "chainlink", symbol: "link", name: "Chainlink", current_price: 18.45, price_change_percentage_24h: 1.89, market_cap: 11500000000, total_volume: 780000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 17 + Math.sin(i / 9) * 2 + i * 0.008) } },
-  { id: "polkadot", symbol: "dot", name: "Polkadot", current_price: 7.82, price_change_percentage_24h: -0.56, market_cap: 10800000000, total_volume: 420000000, image: "", sparkline_in_7d: { price: Array.from({ length: 168 }, (_, i) => 7.5 + Math.sin(i / 10) * 0.5 + i * 0.001) } },
+  { id: "bitcoin", symbol: "btc", name: "Bitcoin", current_price: 97842.50, price_change_percentage_24h: 2.34, market_cap: 1930000000000, total_volume: 48000000000, image: COIN_IMAGES.bitcoin, sparkline_in_7d: { price: genSparkline(95000, 0.03, 0.03) } },
+  { id: "ethereum", symbol: "eth", name: "Ethereum", current_price: 3421.80, price_change_percentage_24h: -0.87, market_cap: 411000000000, total_volume: 19000000000, image: COIN_IMAGES.ethereum, sparkline_in_7d: { price: genSparkline(3350, 0.04, -0.01) } },
+  { id: "solana", symbol: "sol", name: "Solana", current_price: 187.45, price_change_percentage_24h: 5.12, market_cap: 91000000000, total_volume: 5400000000, image: COIN_IMAGES.solana, sparkline_in_7d: { price: genSparkline(175, 0.05, 0.05) } },
+  { id: "binancecoin", symbol: "bnb", name: "BNB", current_price: 612.30, price_change_percentage_24h: 1.45, market_cap: 89000000000, total_volume: 2100000000, image: COIN_IMAGES.binancecoin, sparkline_in_7d: { price: genSparkline(600, 0.03, 0.015) } },
+  { id: "ripple", symbol: "xrp", name: "XRP", current_price: 2.41, price_change_percentage_24h: -1.23, market_cap: 138000000000, total_volume: 6700000000, image: COIN_IMAGES.ripple, sparkline_in_7d: { price: genSparkline(2.45, 0.04, -0.012) } },
+  { id: "cardano", symbol: "ada", name: "Cardano", current_price: 0.89, price_change_percentage_24h: 3.67, market_cap: 31000000000, total_volume: 1200000000, image: COIN_IMAGES.cardano, sparkline_in_7d: { price: genSparkline(0.84, 0.05, 0.04) } },
+  { id: "dogecoin", symbol: "doge", name: "Dogecoin", current_price: 0.324, price_change_percentage_24h: -2.11, market_cap: 47000000000, total_volume: 3400000000, image: COIN_IMAGES.dogecoin, sparkline_in_7d: { price: genSparkline(0.34, 0.06, -0.02) } },
+  { id: "avalanche-2", symbol: "avax", name: "Avalanche", current_price: 38.72, price_change_percentage_24h: 4.21, market_cap: 15800000000, total_volume: 890000000, image: COIN_IMAGES["avalanche-2"], sparkline_in_7d: { price: genSparkline(36, 0.05, 0.04) } },
+  { id: "chainlink", symbol: "link", name: "Chainlink", current_price: 18.45, price_change_percentage_24h: 1.89, market_cap: 11500000000, total_volume: 780000000, image: COIN_IMAGES.chainlink, sparkline_in_7d: { price: genSparkline(17.5, 0.04, 0.02) } },
+  { id: "polkadot", symbol: "dot", name: "Polkadot", current_price: 7.82, price_change_percentage_24h: -0.56, market_cap: 10800000000, total_volume: 420000000, image: COIN_IMAGES.polkadot, sparkline_in_7d: { price: genSparkline(7.9, 0.04, -0.005) } },
 ];
 
 export const useMarketData = (count = 10) => {
