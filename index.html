@@ -25,36 +25,6 @@
   </head>
 
   <body>
-    <script>
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,es,fr,de,pt,ar,zh-CN,ja,ko,ru,hi,tr,it,nl,pl,sv,th,vi,id,ms',
-          autoDisplay: false,
-          multilanguagePage: true
-        }, 'google_translate_element');
-        // Auto-detect and translate based on browser language
-        setTimeout(function() {
-          var userLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0];
-          var langMap = { es:'es', fr:'fr', de:'de', pt:'pt', ar:'ar', zh:'zh-CN', ja:'ja', ko:'ko', ru:'ru', hi:'hi', tr:'tr', it:'it', nl:'nl', pl:'pl', sv:'sv', th:'th', vi:'vi', id:'id', ms:'ms' };
-          var targetLang = langMap[userLang];
-          if (targetLang) {
-            var combo = document.querySelector('.goog-te-combo');
-            if (combo) { combo.value = targetLang; combo.dispatchEvent(new Event('change')); }
-          }
-        }, 1500);
-      }
-    </script>
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <style>
-      #google_translate_element { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
-      .goog-te-banner-frame { display: none !important; }
-      body { top: 0 !important; }
-      .goog-te-gadget { font-size: 0 !important; }
-      .skiptranslate iframe { display: none !important; }
-      .VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
-      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
-    </style>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
