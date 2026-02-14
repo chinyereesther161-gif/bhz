@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Clock, ArrowRight, CheckCircle2, Wallet, ChevronLeft, AlertTriangle, Info, Copy, Check } from "lucide-react";
+import { Shield, Clock, ArrowRight, CheckCircle2, Wallet, ChevronLeft, AlertTriangle, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const networkMeta: Record<string, { name: string; symbol: string; color: string; logoSvg: React.ReactNode }> = {
@@ -62,11 +62,6 @@ const networks = Object.entries(networkMeta).map(([key, val]) => ({
   logoSvg: val.logoSvg,
 }));
 
-const withdrawSteps = [
-  { num: 1, title: "Select your network", desc: "Choose the same cryptocurrency network your receiving wallet supports." },
-  { num: 2, title: "Enter wallet & amount", desc: "Paste your personal wallet address and enter the USD amount (min $50)." },
-  { num: 3, title: "Confirm & submit", desc: "Review your details and submit. Funds arrive within 24 hours." },
-];
 
 const Withdraw = () => {
   const { user, profile } = useAuth();
@@ -76,7 +71,7 @@ const Withdraw = () => {
   const [amount, setAmount] = useState("");
   const [email, setEmail] = useState(profile?.email || "");
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(0); // 0 = guide, 1-3 = wizard
+  const [step, setStep] = useState(1); // 1-3 = wizard
 
   const numAmount = Number(amount);
   const balance = profile?.balance ?? 0;
@@ -110,7 +105,7 @@ const Withdraw = () => {
       toast({ title: "Withdrawal submitted", description: "Processing within 24 hours." });
       setAmount("");
       setWalletAddress("");
-      setStep(0);
+      setStep(1);
     }
   };
 
@@ -151,29 +146,6 @@ const Withdraw = () => {
         </motion.div>
 
         <AnimatePresence mode="wait">
-          {/* Step 0 — Guide */}
-          {step === 0 && (
-            <motion.div key="guide" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary" />
-                <p className="text-xs font-bold">How to Withdraw</p>
-              </div>
-              <div className="space-y-3">
-                {withdrawSteps.map(s => (
-                  <div key={s.num} className="flex items-start gap-3 rounded-xl border border-border/15 bg-card/10 p-3.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-[11px] font-black">{s.num}</div>
-                    <div>
-                      <p className="text-[11px] font-bold">{s.title}</p>
-                      <p className="text-[10px] text-muted-foreground/50 leading-relaxed mt-0.5">{s.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Button className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/10" onClick={() => setStep(1)}>
-                Start Withdrawal <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
 
           {/* Step 1 — Network */}
           {step === 1 && (
@@ -234,9 +206,6 @@ const Withdraw = () => {
                   );
                 })}
               </div>
-              <button onClick={() => setStep(0)} className="flex items-center gap-1 text-[10px] text-muted-foreground/40 hover:text-primary mx-auto mt-1">
-                <ChevronLeft className="h-3 w-3" /> Back to guide
-              </button>
             </motion.div>
           )}
 
