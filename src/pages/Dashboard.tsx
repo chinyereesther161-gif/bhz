@@ -163,48 +163,8 @@ const Dashboard = () => {
           </Button>
         </motion.div>
 
-        {/* Recent AI Trades - Live Feed */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
-          <Card className="bg-card/10 border-border/15 overflow-hidden">
-            <CardContent className="p-0">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
-                <h3 className="text-xs font-bold flex items-center gap-1.5">
-                  <Activity className="h-3.5 w-3.5 text-success" />
-                  Recent AI Trades
-                </h3>
-                <div className="flex items-center gap-1.5">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
-                  </span>
-                  <span className="text-[9px] text-success font-bold">Live Feed</span>
-                </div>
-              </div>
-              <div className="max-h-52 overflow-y-auto divide-y divide-border/5">
-                {trades.length === 0 ? (
-                  <div className="p-5 text-center text-xs text-muted-foreground/30">Loading trades...</div>
-                ) : trades.map((t, i) => (
-                  <motion.div
-                    key={`${t.time}-${i}`}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2.5 px-5 py-2.5 hover:bg-card/10 transition-colors"
-                  >
-                    <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${tradeDot(t.type)}`} />
-                    <span className={`text-[10px] flex-1 ${tradeColor(t.type)}`}>{t.msg}</span>
-                    <span className="text-[9px] text-muted-foreground/20 font-mono shrink-0">{t.time}</span>
-                  </motion.div>
-                ))}
-              </div>
-              <Link to="/trading" className="flex items-center justify-center py-2.5 border-t border-border/10 text-[10px] text-primary font-bold hover:bg-card/10 transition-colors">
-                View All Activity →
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
-
         {/* Live Market Overview */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
           <Card className="bg-card/15 border-border/15 overflow-hidden">
             <CardContent className="p-0">
               <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
@@ -240,6 +200,46 @@ const Dashboard = () => {
                   })}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Recent AI Trades - Live Feed */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+          <Card className="bg-card/10 border-border/15 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
+                <h3 className="text-xs font-bold flex items-center gap-1.5">
+                  <Activity className="h-3.5 w-3.5 text-success" />
+                  Recent AI Trades
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                  </span>
+                  <span className="text-[9px] text-success font-bold">Live Feed</span>
+                </div>
+              </div>
+              <div className="max-h-52 overflow-y-auto divide-y divide-border/5">
+                {trades.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-muted-foreground/30">Loading trades...</div>
+                ) : trades.map((t, i) => (
+                  <motion.div
+                    key={`${t.time}-${i}`}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-2.5 px-5 py-2.5 hover:bg-card/10 transition-colors"
+                  >
+                    <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${tradeDot(t.type)}`} />
+                    <span className={`text-[10px] flex-1 ${tradeColor(t.type)}`}>{t.msg}</span>
+                    <span className="text-[9px] text-muted-foreground/20 font-mono shrink-0">{t.time}</span>
+                  </motion.div>
+                ))}
+              </div>
+              <Link to="/trading" className="flex items-center justify-center py-2.5 border-t border-border/10 text-[10px] text-primary font-bold hover:bg-card/10 transition-colors">
+                View All Activity →
+              </Link>
             </CardContent>
           </Card>
         </motion.div>
