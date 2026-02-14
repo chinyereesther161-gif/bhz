@@ -116,6 +116,9 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_country: string | null
+          last_device: string | null
+          last_ip: string | null
           name: string
           updated_at: string
           user_id: string
@@ -129,6 +132,9 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_country?: string | null
+          last_device?: string | null
+          last_ip?: string | null
           name?: string
           updated_at?: string
           user_id: string
@@ -142,10 +148,46 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_country?: string | null
+          last_device?: string | null
+          last_ip?: string | null
           name?: string
           updated_at?: string
           user_id?: string
           weekly_pnl?: number
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          admin_reply: string | null
+          created_at: string
+          id: string
+          message: string
+          replied_at: string | null
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          replied_at?: string | null
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          admin_reply?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          replied_at?: string | null
+          status?: string
+          subject?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -188,6 +230,36 @@ export type Database = {
           network?: string
           user_id?: string
           wallet_address?: string
+        }
+        Relationships: []
+      }
+      visitor_logs: {
+        Row: {
+          country: string | null
+          created_at: string
+          device: string | null
+          id: string
+          ip_address: string | null
+          page: string | null
+          user_id: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          ip_address?: string | null
+          page?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          device?: string | null
+          id?: string
+          ip_address?: string | null
+          page?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

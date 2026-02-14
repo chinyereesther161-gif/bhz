@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, ArrowDownToLine, ArrowUpFromLine, Bell, Settings, UserCheck, ChevronRight } from "lucide-react";
+import { Users, ArrowDownToLine, ArrowUpFromLine, Bell, MessageCircle, Globe, ChevronRight } from "lucide-react";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ users: 0, pendingDeposits: 0, pendingWithdrawals: 0 });
@@ -31,6 +31,8 @@ const AdminDashboard = () => {
     { to: "/admin/deposits", icon: ArrowDownToLine, label: "Deposit Verification", desc: "Approve/reject deposits" },
     { to: "/admin/withdrawals", icon: ArrowUpFromLine, label: "Withdrawal Processing", desc: "Process withdrawal requests" },
     { to: "/admin/notifications", icon: Bell, label: "Broadcast Notifications", desc: "Send notifications to users" },
+    { to: "/admin/support", icon: MessageCircle, label: "Support Messages", desc: "View and reply to support requests" },
+    { to: "/admin/visitors", icon: Globe, label: "Visitor Logs", desc: "Track visitor IP, country & devices" },
   ];
 
   return (
