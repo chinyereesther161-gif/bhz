@@ -9,7 +9,7 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="relative py-28 px-4 section-glow">
+  <section id="how" className="relative py-28 px-4 section-glow">
     <div className="pointer-events-none absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-primary/[0.03] blur-[200px]" />
 
     <div className="container mx-auto max-w-5xl">

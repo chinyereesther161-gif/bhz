@@ -149,7 +149,7 @@ const HeroSection = () => {
                         <div className="flex items-center gap-3">
                           <span className="font-mono text-foreground/80">${formatPrice(coin.current_price)}</span>
                           <span className={`font-semibold ${coin.price_change_percentage_24h >= 0 ? "text-success" : "text-destructive"}`}>
-                            {coin.price_change_percentage_24h >= 0 ? "+" : ""}{coin.price_change_percentage_24h.toFixed(2)}%
+                            {(coin.price_change_percentage_24h ?? 0) >= 0 ? "+" : ""}{(coin.price_change_percentage_24h ?? 0).toFixed(2)}%
                           </span>
                         </div>
                       </div>
