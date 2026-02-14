@@ -3,10 +3,10 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Wallet, ArrowDownToLine, ArrowUpFromLine, TrendingUp, TrendingDown, Package, Activity, Brain, Shield, BarChart3, Globe, Zap, DollarSign } from "lucide-react";
+import { Wallet, ArrowDownToLine, ArrowUpFromLine, TrendingUp, TrendingDown, Package, Activity, Brain, Shield, Globe, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMarketData, formatPrice } from "@/hooks/useMarketData";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -14,8 +14,9 @@ type Investment = Tables<"investments">;
 
 const Dashboard = () => {
   const { profile, user } = useAuth();
-  const { data: marketData, loading: marketLoading } = useMarketData(6);
+  const { data: marketData, loading: marketLoading } = useMarketData(8);
   const [investments, setInvestments] = useState<Investment[]>([]);
+  const [trades, setTrades] = useState<{ msg: string; time: string; type: string }[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -24,8 +25,41 @@ const Dashboard = () => {
       .then(({ data }) => setInvestments(data || []));
   }, [user]);
 
+  // Generate live AI trade feed based on real market data
+  const generateTrade = useCallback(() => {
+    if (marketData.length === 0) return null;
+    const coin = marketData[Math.floor(Math.random() * marketData.length)];
+    const sym = coin.symbol.toUpperCase();
+    const pct = (Math.random() * 3.5 + 0.3).toFixed(2);
+    const isUp = coin.price_change_percentage_24h >= 0;
+    const templates = [
+      { msg: `${sym}/USD ${isUp ? "Long" : "Short"} +${pct}% closed`, type: "profit" },
+      { msg: `${sym} Take-profit triggered +${pct}%`, type: "profit" },
+      { msg: `${sym}/USD Entry at $${formatPrice(coin.current_price)}`, type: "signal" },
+      { msg: `${sym} position risk adjusted`, type: "risk" },
+      { msg: `${sym} breakout detected $${formatPrice(coin.current_price)}`, type: "signal" },
+      { msg: `${sym}/USD Scalp +${pct}% completed`, type: "profit" },
+    ];
+    const item = templates[Math.floor(Math.random() * templates.length)];
+    return { ...item, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) };
+  }, [marketData]);
+
+  useEffect(() => {
+    if (marketData.length === 0) return;
+    const initial = Array.from({ length: 5 }, () => generateTrade()).filter(Boolean) as typeof trades;
+    setTrades(initial);
+    const interval = setInterval(() => {
+      const t = generateTrade();
+      if (t) setTrades(prev => [t, ...prev].slice(0, 12));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [marketData, generateTrade]);
+
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
   const balance = profile?.balance ?? 0;
+
+  const tradeColor = (t: string) => t === "profit" ? "text-success" : t === "signal" ? "text-primary" : "text-muted-foreground/50";
+  const tradeDot = (t: string) => t === "profit" ? "bg-success" : t === "signal" ? "bg-primary" : "bg-muted-foreground/30";
 
   return (
     <AppLayout>
@@ -39,7 +73,7 @@ const Dashboard = () => {
           <p className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">{profile?.capvest_id}</p>
         </motion.div>
 
-        {/* Portfolio Card - Redesigned without chart */}
+        {/* Portfolio Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
           <Card className="glow-border overflow-hidden">
             <CardContent className="relative p-0">
@@ -129,8 +163,48 @@ const Dashboard = () => {
           </Button>
         </motion.div>
 
+        {/* Recent AI Trades - Live Feed */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }}>
+          <Card className="bg-card/10 border-border/15 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
+                <h3 className="text-xs font-bold flex items-center gap-1.5">
+                  <Activity className="h-3.5 w-3.5 text-success" />
+                  Recent AI Trades
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                  </span>
+                  <span className="text-[9px] text-success font-bold">Live Feed</span>
+                </div>
+              </div>
+              <div className="max-h-52 overflow-y-auto divide-y divide-border/5">
+                {trades.length === 0 ? (
+                  <div className="p-5 text-center text-xs text-muted-foreground/30">Loading trades...</div>
+                ) : trades.map((t, i) => (
+                  <motion.div
+                    key={`${t.time}-${i}`}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="flex items-center gap-2.5 px-5 py-2.5 hover:bg-card/10 transition-colors"
+                  >
+                    <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${tradeDot(t.type)}`} />
+                    <span className={`text-[10px] flex-1 ${tradeColor(t.type)}`}>{t.msg}</span>
+                    <span className="text-[9px] text-muted-foreground/20 font-mono shrink-0">{t.time}</span>
+                  </motion.div>
+                ))}
+              </div>
+              <Link to="/trading" className="flex items-center justify-center py-2.5 border-t border-border/10 text-[10px] text-primary font-bold hover:bg-card/10 transition-colors">
+                View All Activity →
+              </Link>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Live Market Overview */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
           <Card className="bg-card/15 border-border/15 overflow-hidden">
             <CardContent className="p-0">
               <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
@@ -171,7 +245,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Quick Links */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 gap-2.5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }} className="grid grid-cols-2 gap-2.5">
           <Link to="/trading" className="group rounded-2xl border border-border/15 bg-card/10 p-4 transition-all hover:border-primary/15 hover:bg-card/30">
             <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/[0.08] group-hover:bg-primary/[0.15] transition-colors">
               <Brain className="h-4 w-4 text-primary" />
@@ -189,7 +263,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* AI Engine Status */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26 }}>
           <div className="flex items-center gap-3 rounded-2xl border border-success/15 bg-success/[0.03] p-3.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-success/10">
               <Shield className="h-4 w-4 text-success" />

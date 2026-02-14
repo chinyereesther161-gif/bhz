@@ -45,7 +45,7 @@ serve(async (req) => {
 
   try {
     const url = new URL(req.url);
-    const count = parseInt(url.searchParams.get("count") || "10");
+    const count = Math.min(parseInt(url.searchParams.get("count") || "10"), 100);
 
     // Try CoinGecko API
     const controller = new AbortController();
