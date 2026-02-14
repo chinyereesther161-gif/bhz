@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Users, Shield, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -27,7 +28,6 @@ const SignUp = () => {
       toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
       return;
     }
-
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -35,7 +35,6 @@ const SignUp = () => {
       options: { data: { name }, emailRedirectTo: window.location.origin },
     });
     setLoading(false);
-
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
@@ -46,68 +45,69 @@ const SignUp = () => {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Left decorative panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-card/50 items-center justify-center">
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[150px]" />
+          <div className="absolute inset-0 hero-grid opacity-30" />
+          <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.06] blur-[200px]" />
         </div>
-        <div className="relative text-center px-12">
-          <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-primary font-black text-primary-foreground text-2xl mb-6">C</div>
-          <h2 className="text-3xl font-black mb-3">Join 12,400+ Traders</h2>
-          <p className="text-muted-foreground max-w-sm">
-            Create your free account and let our AI start growing your portfolio today.
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative text-center px-12 max-w-md">
+          <div className="flex h-16 w-16 mx-auto items-center justify-center rounded-2xl bg-primary font-black text-primary-foreground text-2xl mb-8 shadow-2xl shadow-primary/20">C</div>
+          <h2 className="text-3xl font-black mb-4">Join 12,400+ Traders</h2>
+          <p className="text-muted-foreground/60 leading-relaxed">
+            Create your account and let our institutional-grade AI start growing your portfolio today.
           </p>
-        </div>
+          <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs text-muted-foreground/40">
+            <span className="flex items-center gap-1.5"><Users className="h-3 w-3 text-primary/40" /> 12,400+ active</span>
+            <span className="flex items-center gap-1.5"><Shield className="h-3 w-3 text-primary/40" /> Fully secured</span>
+            <span className="flex items-center gap-1.5"><TrendingUp className="h-3 w-3 text-success/40" /> Weekly payouts</span>
+          </div>
+        </motion.div>
       </div>
 
       {/* Right form */}
       <div className="flex flex-1 items-center justify-center px-4 py-12">
-        <div className="w-full max-w-sm">
-          <div className="mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 mb-8 lg:hidden">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-black text-primary-foreground text-sm">C</div>
-              <span className="text-lg font-bold"><span className="text-primary">Capvest</span> AI</span>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
+          <div className="mb-10">
+            <Link to="/" className="inline-flex items-center gap-2.5 mb-10 lg:hidden">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary font-black text-primary-foreground text-sm shadow-lg shadow-primary/20">C</div>
+              <span className="text-lg font-bold tracking-tight"><span className="text-primary">Capvest</span> <span className="text-foreground/60">AI</span></span>
             </Link>
             <h1 className="text-2xl font-black">Create Account</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Start your AI trading journey</p>
+            <p className="mt-2 text-sm text-muted-foreground/50">Start your AI trading journey</p>
           </div>
 
           <form onSubmit={handleSignUp} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-xs font-medium">Full Name</Label>
-              <Input id="name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required className="h-11 bg-card/50 border-border/60" />
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-xs font-semibold">Full Name</Label>
+              <Input id="name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl" />
             </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-medium">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="h-11 bg-card/50 border-border/60" />
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-xs font-semibold">Email</Label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl" />
             </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-xs font-medium">Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required className="h-11 bg-card/50 border-border/60 pr-10" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl pr-11" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirm Password</Label>
-              <Input id="confirmPassword" type={showPassword ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="h-11 bg-card/50 border-border/60" />
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-xs font-semibold">Confirm Password</Label>
+              <Input id="confirmPassword" type={showPassword ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl" />
             </div>
-
-            <Button type="submit" className="w-full h-11 gap-2 font-bold" disabled={loading}>
+            <Button type="submit" className="w-full h-12 gap-2 font-bold rounded-xl shadow-lg shadow-primary/15 hover:shadow-primary/25 transition-all" disabled={loading}>
               {loading ? "Creating account..." : "Get Started"} <ArrowRight className="h-4 w-4" />
             </Button>
-
-            <p className="text-center text-xs text-muted-foreground pt-2">
+            <p className="text-center text-xs text-muted-foreground/40 pt-2">
               Already have an account?{" "}
               <Link to="/signin" className="text-primary font-semibold hover:underline">Sign In</Link>
             </p>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

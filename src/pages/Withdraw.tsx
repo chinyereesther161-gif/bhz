@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Clock, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 
 const networks = [
   { id: "usdt", name: "USDT TRC20", icon: "₮" },
@@ -40,7 +41,6 @@ const Withdraw = () => {
       toast({ title: "Error", description: "Enter your wallet address.", variant: "destructive" });
       return;
     }
-
     setLoading(true);
     const { error } = await supabase.from("withdrawals").insert({
       user_id: user.id,
@@ -50,7 +50,6 @@ const Withdraw = () => {
       email: email.trim(),
     });
     setLoading(false);
-
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -63,70 +62,73 @@ const Withdraw = () => {
   return (
     <AppLayout>
       <div className="mx-auto max-w-lg space-y-5">
-        <div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-xl font-black">Withdraw</h1>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground/60">
             Available: <span className="text-primary font-bold">${(profile?.balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
           </p>
-        </div>
+        </motion.div>
 
         {/* Network selector */}
-        <div className="grid grid-cols-4 gap-2">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-4 gap-2.5">
           {networks.map(n => (
             <button
               key={n.id}
               onClick={() => setNetwork(n)}
-              className={`rounded-xl border p-3 text-center transition-all ${
+              className={`rounded-2xl border p-4 text-center transition-all duration-300 ${
                 network.id === n.id
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border/40 bg-card/30 text-muted-foreground hover:border-primary/20"
+                  ? "border-primary/30 bg-primary/[0.06] text-primary shadow-md shadow-primary/10"
+                  : "border-border/15 bg-card/15 text-muted-foreground/50 hover:border-primary/15 hover:bg-card/30"
               }`}
             >
-              <span className="block text-lg font-bold">{n.icon}</span>
-              <span className="block text-[10px] font-medium mt-1">{n.name}</span>
+              <span className="block text-xl font-bold">{n.icon}</span>
+              <span className="block text-[9px] font-semibold mt-1.5 uppercase tracking-wider">{n.name.split(' ')[0]}</span>
             </button>
           ))}
-        </div>
+        </motion.div>
 
-        <Card className="bg-card/50">
-          <CardContent className="p-5 space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Email</Label>
-              <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="h-11 bg-secondary/30 border-border/40" />
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="bg-card/20 border-border/15">
+            <CardContent className="p-5 space-y-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Email</Label>
+                <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="h-11 bg-secondary/20 border-border/15 rounded-xl" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Wallet Address</Label>
+                <Input value={walletAddress} onChange={e => setWalletAddress(e.target.value)} placeholder="Enter your wallet address" className="h-11 bg-secondary/20 border-border/15 rounded-xl font-mono text-xs" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold">Amount (USD) — Min $50</Label>
+                <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50" min="50" className="h-11 bg-secondary/20 border-border/15 rounded-xl" />
+              </div>
+              <Button className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/15" onClick={handleSubmit} disabled={loading}>
+                {loading ? "Submitting..." : "Submit Withdrawal"}
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="grid grid-cols-2 gap-3">
+          <div className="flex items-center gap-3 rounded-2xl border border-border/15 bg-card/15 p-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/[0.08]">
+              <Shield className="h-4 w-4 text-primary/70" />
             </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Wallet Address</Label>
-              <Input value={walletAddress} onChange={e => setWalletAddress(e.target.value)} placeholder="Enter your wallet address" className="h-11 bg-secondary/30 border-border/40 font-mono text-xs" />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Amount (USD) — Min $50</Label>
-              <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50" min="50" className="h-11 bg-secondary/30 border-border/40" />
-            </div>
-
-            <Button className="w-full h-12 font-bold" onClick={handleSubmit} disabled={loading}>
-              {loading ? "Submitting..." : "Submit Withdrawal"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 rounded-lg border border-border/30 bg-card/30 p-3">
-            <Shield className="h-4 w-4 text-primary shrink-0" />
             <div>
               <p className="text-[10px] font-bold">Secure</p>
-              <p className="text-[9px] text-muted-foreground">256-bit encrypted</p>
+              <p className="text-[9px] text-muted-foreground/40">256-bit encrypted</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-lg border border-border/30 bg-card/30 p-3">
-            <Clock className="h-4 w-4 text-primary shrink-0" />
+          <div className="flex items-center gap-3 rounded-2xl border border-border/15 bg-card/15 p-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/[0.08]">
+              <Clock className="h-4 w-4 text-primary/70" />
+            </div>
             <div>
               <p className="text-[10px] font-bold">Fast</p>
-              <p className="text-[9px] text-muted-foreground">Within 24 hours</p>
+              <p className="text-[9px] text-muted-foreground/40">Within 24 hours</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </AppLayout>
   );
