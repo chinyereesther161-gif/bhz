@@ -97,7 +97,7 @@ const HeroSection = () => {
                     <div className="h-2.5 w-2.5 rounded-full bg-primary/60" />
                     <div className="h-2.5 w-2.5 rounded-full bg-success/60" />
                   </div>
-                  <span className="text-[10px] font-medium text-muted-foreground/50 ml-1">Capvest Terminal v4.2</span>
+                  <span className="text-[10px] font-medium text-muted-foreground/50 ml-1">Capvest AI Trading</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-glow" />
