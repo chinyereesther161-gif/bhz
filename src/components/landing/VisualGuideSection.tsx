@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { UserPlus, Wallet, BarChart3, TrendingUp, ArrowDown, DollarSign, Shield, CheckCircle2 } from "lucide-react";
+import { UserPlus, Wallet, BarChart3, TrendingUp, ArrowDown, DollarSign, Shield, CheckCircle2, Play } from "lucide-react";
+import promoVideo from "@/assets/promo-video.mp4";
 
 const steps = [
   {
@@ -81,8 +82,35 @@ const VisualGuideSection = () => (
           How to <span className="text-gradient-gold">Start Earning</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
-          Follow these simple steps to deposit, invest, and start receiving weekly profits from our AI trading engine.
+          Watch how it works, then follow the simple steps below to start receiving weekly profits.
         </p>
+      </motion.div>
+
+      {/* Promo Video */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-16"
+      >
+        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl shadow-primary/10">
+          <div className="absolute top-0 left-0 right-0 h-10 bg-card/60 backdrop-blur-xl border-b border-border/20 flex items-center px-4 z-10">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
+              <div className="h-2.5 w-2.5 rounded-full bg-primary/60" />
+              <div className="h-2.5 w-2.5 rounded-full bg-success/60" />
+            </div>
+            <span className="text-[10px] font-medium text-muted-foreground/50 ml-3">Capvest AI — How It Works</span>
+          </div>
+          <video
+            src={promoVideo}
+            controls
+            playsInline
+            preload="metadata"
+            className="w-full aspect-video pt-10"
+            poster=""
+          />
+        </div>
       </motion.div>
 
       <div className="space-y-6">
@@ -99,7 +127,6 @@ const VisualGuideSection = () => (
             >
               <div className="rounded-2xl border border-border/30 bg-card/25 p-6 sm:p-8 transition-all duration-500 hover:border-primary/20 hover:bg-card/40 overflow-hidden">
                 <div className="flex flex-col sm:flex-row gap-6 items-start">
-                  {/* Left: step number + icon */}
                   <div className="flex sm:flex-col items-center gap-4 sm:gap-3 shrink-0">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-black text-primary-foreground shadow-lg shadow-primary/25">
                       {s.step}
@@ -109,7 +136,6 @@ const VisualGuideSection = () => (
                     </div>
                   </div>
 
-                  {/* Right: content */}
                   <div className="flex-1">
                     <h3 className="text-lg font-bold mb-1">{s.title}</h3>
                     <p className="text-xs text-primary font-semibold mb-4">{s.subtitle}</p>
@@ -127,7 +153,6 @@ const VisualGuideSection = () => (
                 </div>
               </div>
 
-              {/* Connector arrow */}
               {i < steps.length - 1 && (
                 <div className="flex justify-center py-2">
                   <ArrowDown className="h-5 w-5 text-primary/30" />

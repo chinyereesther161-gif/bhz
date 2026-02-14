@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { BarChart3, Package, LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Settings, Bell, Shield, History, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Portfolio" },
@@ -11,8 +13,29 @@ const navItems = [
 ];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .or(`user_id.eq.${user.id},is_broadcast.eq.true`)
+        .eq("is_read", false);
+      setUnreadCount(count ?? 0);
+    };
+    fetchUnread();
+
+    const channel = supabase
+      .channel("notif-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, () => fetchUnread())
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -36,8 +59,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             <NavLink to="/withdraw" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
               <ArrowUpFromLine className="h-[17px] w-[17px]" />
             </NavLink>
-            <NavLink to="/notifications" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
+            <NavLink to="/notifications" className={({ isActive }) => `relative rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
               <Bell className="h-[17px] w-[17px]" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground px-1">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </NavLink>
             {isAdmin && (
               <NavLink to="/admin" className="rounded-xl p-2 text-primary/60 hover:text-primary hover:bg-primary/10 transition-all">

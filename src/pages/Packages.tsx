@@ -12,16 +12,16 @@ import { TrendingUp, Shield, Zap, Check, Sparkles, DollarSign } from "lucide-rea
 import { motion } from "framer-motion";
 
 const packages = [
-  { name: "Micro", amount: 50, weeklyMin: 4, weeklyMax: 6, risk: "Low" },
-  { name: "Starter", amount: 100, weeklyMin: 5, weeklyMax: 8, risk: "Low" },
-  { name: "Basic", amount: 200, weeklyMin: 6, weeklyMax: 10, risk: "Medium" },
-  { name: "Standard", amount: 500, weeklyMin: 7, weeklyMax: 11, risk: "Medium" },
-  { name: "Professional", amount: 1000, weeklyMin: 8, weeklyMax: 13, risk: "Medium" },
-  { name: "Gold", amount: 2500, weeklyMin: 10, weeklyMax: 15, risk: "High" },
-  { name: "Platinum", amount: 5000, weeklyMin: 12, weeklyMax: 18, risk: "High" },
-  { name: "Diamond", amount: 10000, weeklyMin: 14, weeklyMax: 20, risk: "High" },
-  { name: "Elite", amount: 25000, weeklyMin: 15, weeklyMax: 22, risk: "Very High" },
-  { name: "Institutional", amount: 50000, weeklyMin: 16, weeklyMax: 25, risk: "Very High" },
+  { name: "Micro", amount: 50, weeklyMin: 8, weeklyMax: 12, risk: "Low" },
+  { name: "Starter", amount: 100, weeklyMin: 10, weeklyMax: 15, risk: "Low" },
+  { name: "Basic", amount: 200, weeklyMin: 12, weeklyMax: 18, risk: "Medium" },
+  { name: "Standard", amount: 500, weeklyMin: 14, weeklyMax: 20, risk: "Medium" },
+  { name: "Professional", amount: 1000, weeklyMin: 15, weeklyMax: 22, risk: "Medium" },
+  { name: "Gold", amount: 2500, weeklyMin: 16, weeklyMax: 25, risk: "High" },
+  { name: "Platinum", amount: 5000, weeklyMin: 18, weeklyMax: 28, risk: "High" },
+  { name: "Diamond", amount: 10000, weeklyMin: 20, weeklyMax: 30, risk: "High" },
+  { name: "Elite", amount: 25000, weeklyMin: 22, weeklyMax: 32, risk: "Very High" },
+  { name: "Institutional", amount: 50000, weeklyMin: 25, weeklyMax: 35, risk: "Very High" },
 ];
 
 const riskColor = (r: string) =>
