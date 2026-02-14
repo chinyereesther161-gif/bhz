@@ -11,6 +11,9 @@ const tiers = [
   { name: "Professional", desc: "Serious traders" },
   { name: "Gold", desc: "Premium access" },
   { name: "Platinum", desc: "Maximum returns" },
+  { name: "Diamond", desc: "High-net-worth" },
+  { name: "Elite", desc: "Exclusive tier" },
+  { name: "Institutional", desc: "Top-tier access", highlight: true },
 ];
 
 const benefits = [
@@ -36,8 +39,8 @@ const PackagesPreview = () => (
         <h2 className="text-3xl font-black sm:text-4xl lg:text-[2.75rem]">
           Choose Your <span className="text-gradient-gold">Investment Tier</span>
         </h2>
-        <p className="mx-auto mt-4 mb-12 max-w-xl text-muted-foreground/70 leading-relaxed">
-          7 professionally crafted tiers for every investor — from beginners to high-net-worth individuals. 
+        <p className="mx-auto mt-4 mb-12 max-w-xl text-muted-foreground leading-relaxed">
+          10 professionally crafted tiers for every investor — from beginners to institutions. 
           All plans include the same institutional AI engine.
         </p>
 
@@ -52,12 +55,12 @@ const PackagesPreview = () => (
               transition={{ delay: i * 0.04 }}
               className={`rounded-xl px-5 py-3 text-center transition-all duration-300 ${
                 t.highlight
-                  ? "border border-primary/30 bg-primary/[0.08] shadow-lg shadow-primary/10"
-                  : "border border-border/30 bg-card/20 hover:border-primary/15 hover:bg-card/40"
+                  ? "border border-primary/30 bg-primary/[0.1] shadow-lg shadow-primary/10"
+                  : "border border-border/40 bg-card/30 hover:border-primary/20 hover:bg-card/50"
               }`}
             >
               <p className={`text-sm font-bold ${t.highlight ? "text-primary" : "text-foreground"}`}>{t.name}</p>
-              <p className="text-[10px] text-muted-foreground/50 mt-0.5">{t.desc}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{t.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -65,11 +68,11 @@ const PackagesPreview = () => (
         {/* Benefits */}
         <div className="mx-auto grid max-w-lg grid-cols-2 gap-4 mb-12">
           {benefits.map(b => (
-            <div key={b.text} className="flex items-center gap-3 text-left rounded-xl bg-card/15 border border-border/20 p-4">
+            <div key={b.text} className="flex items-center gap-3 text-left rounded-xl bg-card/30 border border-border/30 p-4">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                 <b.icon className="h-4 w-4 text-primary" />
               </div>
-              <span className="text-xs text-muted-foreground/80 font-medium">{b.text}</span>
+              <span className="text-xs text-muted-foreground font-medium">{b.text}</span>
             </div>
           ))}
         </div>

@@ -4,6 +4,7 @@ import MarketTicker from "@/components/landing/MarketTicker";
 import StatsGrid from "@/components/landing/StatsGrid";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
+import VisualGuideSection from "@/components/landing/VisualGuideSection";
 import ComparisonSection from "@/components/landing/ComparisonSection";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
 import PackagesPreview from "@/components/landing/PackagesPreview";
@@ -19,6 +20,7 @@ const Index = () => (
     <StatsGrid />
     <FeaturesSection />
     <HowItWorksSection />
+    <VisualGuideSection />
     <ComparisonSection />
     <TestimonialsSection />
     <PackagesPreview />
