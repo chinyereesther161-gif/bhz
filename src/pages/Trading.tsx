@@ -1,10 +1,10 @@
 import AppLayout from "@/components/AppLayout";
-import MarketTicker from "@/components/landing/MarketTicker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Shield, TrendingUp, Zap, Activity, BarChart3, Clock, Target, Cpu, Radio } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useMarketData, formatPrice } from "@/hooks/useMarketData";
 
 const activityMessages = [
   { msg: "BTC/USD Long +2.4% executed", type: "profit" },
@@ -23,6 +23,7 @@ const activityMessages = [
 
 const Trading = () => {
   const [activities, setActivities] = useState<{ msg: string; time: string; type: string }[]>([]);
+  const { data: marketData } = useMarketData(6);
 
   useEffect(() => {
     const addActivity = () => {
@@ -30,31 +31,20 @@ const Trading = () => {
       const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       setActivities(prev => [{ ...item, time }, ...prev].slice(0, 15));
     };
-    addActivity();
-    addActivity();
-    addActivity();
+    addActivity(); addActivity(); addActivity();
     const interval = setInterval(addActivity, 2500);
     return () => clearInterval(interval);
   }, []);
 
-  const typeColor = (t: string) => {
-    if (t === "profit") return "text-success";
-    if (t === "signal") return "text-primary";
-    return "text-muted-foreground";
-  };
-
-  const typeDot = (t: string) => {
-    if (t === "profit") return "bg-success";
-    if (t === "signal") return "bg-primary";
-    return "bg-muted-foreground/50";
-  };
+  const typeColor = (t: string) => t === "profit" ? "text-success" : t === "signal" ? "text-primary" : "text-muted-foreground/60";
+  const typeDot = (t: string) => t === "profit" ? "bg-success" : t === "signal" ? "bg-primary" : "bg-muted-foreground/30";
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-lg space-y-5">
+      <div className="mx-auto max-w-lg space-y-4">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
           <h1 className="text-xl font-black">AI Trading</h1>
-          <Badge className="bg-success/10 text-success border border-success/15 gap-1.5 font-bold text-[11px]">
+          <Badge className="bg-success/10 text-success border border-success/15 gap-1 font-bold text-[10px]">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
@@ -63,75 +53,85 @@ const Trading = () => {
           </Badge>
         </motion.div>
 
-        <MarketTicker />
+        {/* Live market prices in a compact row */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {marketData.slice(0, 5).map(coin => (
+              <div key={coin.id} className="shrink-0 rounded-xl border border-border/15 bg-card/20 px-3 py-2 min-w-[100px]">
+                <p className="text-[9px] font-bold uppercase text-muted-foreground/50">{coin.symbol}/USD</p>
+                <p className="text-xs font-black font-mono mt-0.5">${formatPrice(coin.current_price)}</p>
+                <p className={`text-[9px] font-semibold ${coin.price_change_percentage_24h >= 0 ? "text-success" : "text-destructive"}`}>
+                  {coin.price_change_percentage_24h >= 0 ? "+" : ""}{coin.price_change_percentage_24h.toFixed(2)}%
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
 
         {/* AI Engine Card */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
           <Card className="glow-border overflow-hidden">
-            <CardContent className="relative p-6">
+            <CardContent className="relative p-5">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-transparent" />
-              <div className="relative flex items-start gap-4 mb-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
-                  <Brain className="h-6 w-6 text-primary" />
+              <div className="relative flex items-start gap-3 mb-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 border border-primary/15">
+                  <Brain className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold">Capvest AI Engine v4.2</h3>
-                    <Badge variant="outline" className="border-primary/15 text-primary text-[9px] py-0">
-                      <Shield className="mr-1 h-2.5 w-2.5" /> Verified
+                    <h3 className="text-xs font-bold">Capvest AI Engine v4.2</h3>
+                    <Badge variant="outline" className="border-primary/15 text-primary text-[8px] py-0">
+                      <Shield className="mr-0.5 h-2.5 w-2.5" /> Verified
                     </Badge>
                   </div>
-                  <p className="text-[11px] text-muted-foreground/50 mt-0.5">Deep Learning • NLP Sentiment • 200+ Technical Indicators</p>
+                  <p className="text-[10px] text-muted-foreground/40 mt-0.5">Deep Learning • NLP Sentiment • 200+ Indicators</p>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground/70 leading-relaxed">
-                Our proprietary neural network processes millions of data points per second across crypto, forex, and commodity markets — identifying and executing high-probability trades with institutional-grade risk management.
+              <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
+                Our neural network processes millions of data points per second across crypto, forex, and commodities — executing high-probability trades with institutional risk management.
               </p>
             </CardContent>
           </Card>
         </motion.div>
 
         {/* Performance Grid */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-4 gap-2.5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="grid grid-cols-4 gap-2">
           {[
             { icon: TrendingUp, label: "Win Rate", value: "94.7%", color: "text-success" },
-            { icon: BarChart3, label: "Avg Return", value: "12.3%", color: "text-primary" },
-            { icon: Zap, label: "Trades/Day", value: "847", color: "text-foreground" },
+            { icon: BarChart3, label: "Return", value: "12.3%", color: "text-primary" },
+            { icon: Zap, label: "Trades", value: "847", color: "text-foreground" },
             { icon: Target, label: "Precision", value: "99.2%", color: "text-primary" },
           ].map(s => (
-            <Card key={s.label} className="bg-card/20 border-border/20 overflow-hidden">
-              <CardContent className="relative p-3.5 text-center">
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.02] to-transparent" />
-                <div className="relative">
-                  <s.icon className={`mx-auto h-4 w-4 ${s.color} mb-1.5 opacity-70`} />
-                  <p className={`text-sm font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-[8px] text-muted-foreground/40 font-semibold uppercase tracking-wider mt-0.5">{s.label}</p>
-                </div>
+            <Card key={s.label} className="bg-card/15 border-border/15">
+              <CardContent className="relative p-3 text-center">
+                <s.icon className={`mx-auto h-3.5 w-3.5 ${s.color} mb-1 opacity-60`} />
+                <p className={`text-xs font-black ${s.color}`}>{s.value}</p>
+                <p className="text-[7px] text-muted-foreground/30 font-semibold uppercase tracking-wider mt-0.5">{s.label}</p>
               </CardContent>
             </Card>
           ))}
         </motion.div>
 
         {/* How AI Works */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="bg-card/15 border-border/20">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Cpu className="h-4 w-4 text-primary/70" />
-                <h3 className="text-sm font-bold">How Our AI Works</h3>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}>
+          <Card className="bg-card/10 border-border/15">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Cpu className="h-3.5 w-3.5 text-primary/60" />
+                <h3 className="text-xs font-bold">How Our AI Works</h3>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {[
-                  { icon: Radio, step: "Scans 500+ markets in real-time" },
-                  { icon: Brain, step: "Identifies high-probability patterns" },
-                  { icon: Shield, step: "Executes with strict risk controls" },
-                  { icon: Clock, step: "Distributes profits every Monday" },
+                  { step: "Scans 500+ markets in real-time" },
+                  { step: "Identifies high-probability patterns" },
+                  { step: "Executes with strict risk controls" },
+                  { step: "Distributes profits every Monday" },
                 ].map((s, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/[0.08] text-[10px] font-black text-primary border border-primary/10">
+                  <div key={i} className="flex items-center gap-2.5">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/[0.08] text-[9px] font-black text-primary border border-primary/10">
                       {i + 1}
                     </span>
-                    <span className="text-xs text-muted-foreground/70">{s.step}</span>
+                    <span className="text-[11px] text-muted-foreground/60">{s.step}</span>
                   </div>
                 ))}
               </div>
@@ -140,27 +140,27 @@ const Trading = () => {
         </motion.div>
 
         {/* Live Activity Feed */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="bg-card/15 border-border/20 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="bg-card/10 border-border/15 overflow-hidden">
             <CardContent className="p-0">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border/15">
-                <h3 className="text-sm font-bold flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-success" />
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
+                <h3 className="text-xs font-bold flex items-center gap-1.5">
+                  <Activity className="h-3.5 w-3.5 text-success" />
                   Live System Activity
                 </h3>
-                <span className="text-[10px] text-muted-foreground/30">Auto-refreshing</span>
+                <span className="text-[9px] text-muted-foreground/25">Auto-refreshing</span>
               </div>
-              <div className="max-h-64 overflow-y-auto divide-y divide-border/10">
+              <div className="max-h-56 overflow-y-auto divide-y divide-border/8">
                 {activities.map((a, i) => (
                   <motion.div
                     key={`${a.time}-${i}`}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-3 px-6 py-3 hover:bg-card/20 transition-colors"
+                    className="flex items-center gap-2.5 px-5 py-2.5 hover:bg-card/15 transition-colors"
                   >
                     <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${typeDot(a.type)}`} />
-                    <span className={`text-[11px] flex-1 ${typeColor(a.type)}`}>{a.msg}</span>
-                    <span className="text-muted-foreground/25 shrink-0 font-mono text-[10px]">{a.time}</span>
+                    <span className={`text-[10px] flex-1 ${typeColor(a.type)}`}>{a.msg}</span>
+                    <span className="text-muted-foreground/20 shrink-0 font-mono text-[9px]">{a.time}</span>
                   </motion.div>
                 ))}
               </div>
