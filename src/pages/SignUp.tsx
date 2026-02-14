@@ -32,13 +32,13 @@ const SignUp = () => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name }, emailRedirectTo: window.location.origin },
+      options: { data: { name } },
     });
     setLoading(false);
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Check your email", description: "We've sent you a confirmation link." });
+      toast({ title: "Account created!", description: "You can now sign in with your credentials." });
       navigate("/signin");
     }
   };

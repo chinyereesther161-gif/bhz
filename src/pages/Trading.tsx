@@ -2,39 +2,46 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Shield, TrendingUp, Zap, Activity, BarChart3, Clock, Target, Cpu, Radio } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useMarketData, formatPrice } from "@/hooks/useMarketData";
 
-const activityMessages = [
-  { msg: "BTC/USD Long +2.4% executed", type: "profit" },
-  { msg: "ETH/USD Short closed +1.8%", type: "profit" },
-  { msg: "SOL/USD Entry signal detected", type: "signal" },
-  { msg: "Risk management: Position reduced", type: "risk" },
-  { msg: "XRP/USD Take profit hit +3.1%", type: "profit" },
-  { msg: "Market scan: 12 opportunities found", type: "signal" },
-  { msg: "Portfolio rebalanced automatically", type: "risk" },
-  { msg: "BNB/USD Breakout confirmed", type: "signal" },
-  { msg: "GOLD Hedge position opened", type: "risk" },
-  { msg: "EUR/USD Momentum signal triggered", type: "signal" },
-  { msg: "AVAX/USD Long +4.2% closed", type: "profit" },
-  { msg: "Dynamic stop-loss adjusted BTC", type: "risk" },
-];
-
 const Trading = () => {
-  const [activities, setActivities] = useState<{ msg: string; time: string; type: string }[]>([]);
   const { data: marketData } = useMarketData(6);
+  const [activities, setActivities] = useState<{ msg: string; time: string; type: string }[]>([]);
+
+  // Generate activity from real market data
+  const generateActivity = useCallback(() => {
+    if (marketData.length === 0) return null;
+    const coin = marketData[Math.floor(Math.random() * marketData.length)];
+    const sym = coin.symbol.toUpperCase();
+    const pct = (Math.random() * 4 + 0.5).toFixed(1);
+    const isUp = coin.price_change_percentage_24h >= 0;
+    const templates = [
+      { msg: `${sym}/USD ${isUp ? "Long" : "Short"} +${pct}% executed`, type: "profit" },
+      { msg: `${sym}/USD Take profit hit +${pct}%`, type: "profit" },
+      { msg: `${sym}/USD Entry signal at $${formatPrice(coin.current_price)}`, type: "signal" },
+      { msg: `Risk management: ${sym} position adjusted`, type: "risk" },
+      { msg: `${sym} breakout confirmed at $${formatPrice(coin.current_price)}`, type: "signal" },
+      { msg: `Dynamic stop-loss adjusted ${sym}`, type: "risk" },
+      { msg: `${sym}/USD momentum signal triggered`, type: "signal" },
+    ];
+    const item = templates[Math.floor(Math.random() * templates.length)];
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return { ...item, time };
+  }, [marketData]);
 
   useEffect(() => {
-    const addActivity = () => {
-      const item = activityMessages[Math.floor(Math.random() * activityMessages.length)];
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      setActivities(prev => [{ ...item, time }, ...prev].slice(0, 15));
-    };
-    addActivity(); addActivity(); addActivity();
-    const interval = setInterval(addActivity, 2500);
+    if (marketData.length === 0) return;
+    // Seed initial activities
+    const initial = Array.from({ length: 5 }, () => generateActivity()).filter(Boolean) as { msg: string; time: string; type: string }[];
+    setActivities(initial);
+    const interval = setInterval(() => {
+      const item = generateActivity();
+      if (item) setActivities(prev => [item, ...prev].slice(0, 15));
+    }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [marketData, generateActivity]);
 
   const typeColor = (t: string) => t === "profit" ? "text-success" : t === "signal" ? "text-primary" : "text-muted-foreground/60";
   const typeDot = (t: string) => t === "profit" ? "bg-success" : t === "signal" ? "bg-primary" : "bg-muted-foreground/30";
@@ -53,7 +60,7 @@ const Trading = () => {
           </Badge>
         </motion.div>
 
-        {/* Live market prices in a compact row */}
+        {/* Live market prices */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             {marketData.slice(0, 5).map(coin => (
