@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { BarChart3, Package, LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Settings, Bell, Shield, History, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import SupportDialog from "@/components/SupportDialog";
 
 const navItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Portfolio" },
@@ -81,6 +82,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       <main className="flex-1 px-4 py-5 pb-24">{children}</main>
+      <SupportDialog />
 
       {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/20 bg-background/92 backdrop-blur-2xl safe-area-bottom">

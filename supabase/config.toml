@@ -8,3 +8,7 @@ verify_jwt = false
 
 [functions.weekly-profit-clear]
 verify_jwt = false
+
+[functions.track-visit]
+verify_jwt = false
+
