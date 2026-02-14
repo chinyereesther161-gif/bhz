@@ -10,6 +10,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import Trading from "./pages/Trading";
+import Markets from "./pages/Markets";
 import Packages from "./pages/Packages";
 import Deposit from "./pages/Deposit";
 import Withdraw from "./pages/Withdraw";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/trading" element={<ProtectedRoute><Trading /></ProtectedRoute>} />
+            <Route path="/markets" element={<ProtectedRoute><Markets /></ProtectedRoute>} />
             <Route path="/packages" element={<ProtectedRoute><Packages /></ProtectedRoute>} />
             <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
             <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
