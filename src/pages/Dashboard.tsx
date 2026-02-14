@@ -66,7 +66,7 @@ const Dashboard = () => {
       <div className="mx-auto max-w-lg space-y-4">
         {/* Welcome */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <p className="text-[11px] font-medium text-muted-foreground/50">
+          <p className="text-[11px] font-medium text-primary">
             Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},
           </p>
           <h1 className="text-xl font-black">{profile?.name || "Trader"}</h1>
