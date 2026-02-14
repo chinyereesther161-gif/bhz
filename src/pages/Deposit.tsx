@@ -342,11 +342,33 @@ const Deposit = () => {
                 </CardContent>
               </Card>
 
+              {/* Step-by-step Guide */}
+              <Card className="bg-card/10 border-border/15">
+                <CardContent className="p-4 space-y-3">
+                  <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest flex items-center gap-1.5">
+                    <Zap className="h-3 w-3 text-primary" /> How to Complete Your Deposit
+                  </p>
+                  {[
+                    { n: 1, t: "Copy the wallet address above using the copy button." },
+                    { n: 2, t: `Open your crypto wallet app (Trust Wallet, MetaMask, Binance, etc.)` },
+                    { n: 3, t: `Select "Send" and choose ${meta.symbol} on the ${selectedWallet.network} network.` },
+                    { n: 4, t: "Paste the copied address as the recipient." },
+                    { n: 5, t: `Send exactly $${Number(amount).toLocaleString()} worth of ${meta.symbol}.` },
+                    { n: 6, t: "Return here and tap 'Confirm Deposit' below." },
+                  ].map(s => (
+                    <div key={s.n} className="flex items-start gap-2.5">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-[9px] font-black mt-0.5">{s.n}</span>
+                      <p className="text-[10px] text-muted-foreground/60 leading-relaxed">{s.t}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
               {/* Warning */}
               <div className="flex items-start gap-2.5 rounded-xl border border-destructive/10 bg-destructive/[0.03] p-3.5">
                 <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
                 <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
-                  Only send <span className="font-bold text-foreground/70">{meta.symbol}</span> on the <span className="font-bold text-foreground/70">{selectedWallet.network}</span> network. Wrong network = permanent loss.
+                  Only send <span className="font-bold text-foreground/70">{meta.symbol}</span> on the <span className="font-bold text-foreground/70">{selectedWallet.network}</span> network. Sending on the wrong network will result in permanent loss of funds.
                 </p>
               </div>
 

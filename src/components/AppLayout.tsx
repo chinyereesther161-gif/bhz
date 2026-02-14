@@ -83,22 +83,22 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex-1 px-4 py-5 pb-24">{children}</main>
 
       {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/20 bg-background/92 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-lg items-center justify-around py-1.5">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/20 bg-background/92 backdrop-blur-2xl safe-area-bottom">
+        <div className="mx-auto flex max-w-lg items-center justify-around py-1 px-1">
           {navItems.map(item => {
             const active = location.pathname === item.to;
             return (
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[9px] font-semibold transition-all ${
+                className={`flex flex-col items-center gap-0.5 rounded-lg px-1.5 py-1 text-[8px] font-semibold transition-all min-w-0 ${
                   active ? "text-primary" : "text-muted-foreground/35 hover:text-muted-foreground/60"
                 }`}
               >
-                <div className={`p-1.5 rounded-lg transition-all ${active ? "bg-primary/10" : ""}`}>
-                  <item.icon className={`h-[18px] w-[18px] ${active ? "drop-shadow-[0_0_6px_hsl(43,100%,50%,0.3)]" : ""}`} />
+                <div className={`p-1 rounded-lg transition-all ${active ? "bg-primary/10" : ""}`}>
+                  <item.icon className={`h-[17px] w-[17px] ${active ? "drop-shadow-[0_0_6px_hsl(43,100%,50%,0.3)]" : ""}`} />
                 </div>
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </NavLink>
             );
           })}
