@@ -1,79 +1,82 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Shield, TrendingUp, Zap, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const tiers = [
-  { name: "Micro", highlight: false },
-  { name: "Starter", highlight: false },
-  { name: "Basic", highlight: false },
-  { name: "Standard", highlight: true },
-  { name: "Professional", highlight: false },
-  { name: "Gold", highlight: false },
-  { name: "Platinum", highlight: false },
+  { name: "Micro", desc: "Start small" },
+  { name: "Starter", desc: "Begin investing" },
+  { name: "Basic", desc: "Steady growth" },
+  { name: "Standard", desc: "Most popular", highlight: true },
+  { name: "Professional", desc: "Serious traders" },
+  { name: "Gold", desc: "Premium access" },
+  { name: "Platinum", desc: "Maximum returns" },
 ];
 
 const benefits = [
-  "AI-powered automated trading",
-  "Weekly profit distributions",
-  "Real-time dashboard access",
-  "24/7 market monitoring",
-  "Risk management built-in",
-  "Withdraw anytime",
+  { icon: TrendingUp, text: "AI-powered automated trading" },
+  { icon: Shield, text: "Capital protection & risk controls" },
+  { icon: Zap, text: "Weekly profit distributions" },
+  { icon: BarChart3, text: "Real-time analytics dashboard" },
 ];
 
 const PackagesPreview = () => (
-  <section id="plans" className="relative py-24 px-4">
-    <div className="pointer-events-none absolute left-1/2 bottom-0 h-[400px] w-[600px] -translate-x-1/2 rounded-full bg-primary/4 blur-[150px]" />
+  <section id="plans" className="relative py-28 px-4 section-glow">
+    <div className="pointer-events-none absolute left-1/2 bottom-0 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-primary/[0.04] blur-[200px]" />
 
     <div className="container relative mx-auto max-w-4xl text-center">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Investment Plans</p>
-        <h2 className="text-3xl font-black sm:text-4xl lg:text-5xl">
-          Choose Your Path
+        <div className="mb-4 mx-auto inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.05] px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+          Investment Plans
+        </div>
+        <h2 className="text-3xl font-black sm:text-4xl lg:text-[2.75rem]">
+          Choose Your <span className="text-gradient-gold">Investment Tier</span>
         </h2>
-        <p className="mx-auto mt-4 mb-10 max-w-xl text-muted-foreground">
-          7 carefully designed tiers for every level of investor. All plans include full AI trading access, 
-          weekly payouts, and real-time portfolio monitoring.
+        <p className="mx-auto mt-4 mb-12 max-w-xl text-muted-foreground/70 leading-relaxed">
+          7 professionally crafted tiers for every investor — from beginners to high-net-worth individuals. 
+          All plans include the same institutional AI engine.
         </p>
 
         {/* Tier pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 mb-12">
           {tiers.map((t, i) => (
-            <motion.span
+            <motion.div
               key={t.name}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.04 }}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all ${
+              className={`rounded-xl px-5 py-3 text-center transition-all duration-300 ${
                 t.highlight
-                  ? "border border-primary/40 bg-primary/10 text-primary shadow-lg shadow-primary/10"
-                  : "border border-border/40 bg-card/30 text-muted-foreground hover:border-primary/20 hover:text-foreground"
+                  ? "border border-primary/30 bg-primary/[0.08] shadow-lg shadow-primary/10"
+                  : "border border-border/30 bg-card/20 hover:border-primary/15 hover:bg-card/40"
               }`}
             >
-              {t.name}
-            </motion.span>
+              <p className={`text-sm font-bold ${t.highlight ? "text-primary" : "text-foreground"}`}>{t.name}</p>
+              <p className="text-[10px] text-muted-foreground/50 mt-0.5">{t.desc}</p>
+            </motion.div>
           ))}
         </div>
 
-        {/* Benefits grid */}
-        <div className="mx-auto grid max-w-lg grid-cols-2 gap-3 mb-10 text-left">
+        {/* Benefits */}
+        <div className="mx-auto grid max-w-lg grid-cols-2 gap-4 mb-12">
           {benefits.map(b => (
-            <div key={b} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Check className="h-3.5 w-3.5 text-success shrink-0" />
-              <span>{b}</span>
+            <div key={b.text} className="flex items-center gap-3 text-left rounded-xl bg-card/15 border border-border/20 p-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                <b.icon className="h-4 w-4 text-primary" />
+              </div>
+              <span className="text-xs text-muted-foreground/80 font-medium">{b.text}</span>
             </div>
           ))}
         </div>
 
-        <Button asChild size="lg" className="h-13 gap-2 rounded-xl px-10 text-sm font-bold shadow-lg shadow-primary/25">
+        <Button asChild size="lg" className="h-14 gap-2.5 rounded-xl px-12 text-sm font-bold shadow-[0_8px_32px_hsl(43_100%_50%/0.2)] hover:shadow-[0_12px_48px_hsl(43_100%_50%/0.3)] transition-all duration-300 hover:scale-[1.02]">
           <Link to="/signup">
-            View All Plans <ArrowRight className="h-4 w-4" />
+            View All Plans & Invest <ArrowRight className="h-4 w-4" />
           </Link>
         </Button>
       </motion.div>
