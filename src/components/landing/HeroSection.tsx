@@ -37,7 +37,7 @@ const HeroSection = () => {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
               </span>
-              AI Engine Active — Monitoring 500+ Markets Live
+              AI Engine Active · Monitoring 500+ Markets Live
             </motion.div>
 
             <h1 className="mb-6 text-4xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-[3.5rem]">
@@ -48,7 +48,7 @@ const HeroSection = () => {
             </h1>
 
             <p className="mx-auto mb-8 max-w-lg text-base text-muted-foreground/80 leading-relaxed lg:mx-0 sm:text-lg">
-              Our institutional-grade AI monitors global crypto, forex & commodities 24/7 — executing precision trades with a verified{" "}
+              Our institutional-grade AI monitors global crypto, forex and commodities 24/7, executing precision trades with a verified{" "}
               <span className="font-semibold text-success">94.7% win rate</span>. 
               Start earning consistent weekly returns today.
             </p>
@@ -83,7 +83,7 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Right — Live trading terminal */}
+          {/* Right - Live trading terminal */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}

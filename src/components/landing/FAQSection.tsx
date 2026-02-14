@@ -5,7 +5,7 @@ import { HelpCircle } from "lucide-react";
 const faqs = [
   {
     q: "How does the AI trading engine work?",
-    a: "Our proprietary AI uses deep learning neural networks, NLP sentiment analysis, and 200+ technical indicators to scan 500+ markets simultaneously. It identifies high-probability setups and executes trades with institutional-grade risk management — fully automated, 24/7, with no human intervention.",
+    a: "Our proprietary AI uses deep learning neural networks, NLP sentiment analysis, and 200+ technical indicators to scan 500+ markets simultaneously. It identifies high-probability setups and executes trades with institutional-grade risk management, fully automated, 24/7, with no human intervention.",
   },
   {
     q: "What kind of returns can I expect?",

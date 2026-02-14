@@ -123,7 +123,7 @@ const Trading = () => {
                 </div>
               </div>
               <p className="text-[11px] text-muted-foreground/60 leading-relaxed">
-                Our neural network processes millions of data points per second across crypto, forex & commodities — executing high-probability trades with institutional risk management.
+                Our neural network processes millions of data points per second across crypto, forex and commodities, executing high-probability trades with institutional risk management.
               </p>
             </CardContent>
           </Card>

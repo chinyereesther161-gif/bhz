@@ -100,7 +100,7 @@ const Deposit = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Deposit Submitted ✓", description: "Pending verification — usually within 24h." });
+      toast({ title: "Deposit Submitted ✓", description: "Pending verification, usually within 24h." });
       setAmount(""); setStep(1); setSelectedWallet(null);
     }
   };
@@ -354,7 +354,7 @@ const Deposit = () => {
                 className="w-full h-14 font-bold rounded-xl shadow-lg shadow-primary/10 text-sm"
                 onClick={handleSubmit} disabled={loading}
               >
-                {loading ? "Submitting..." : "I've Sent — Confirm Deposit"}
+                {loading ? "Submitting..." : "I've Sent · Confirm Deposit"}
               </Button>
               <p className="text-center text-[9px] text-muted-foreground/25">
                 Deposits verified & credited within 24 hours
