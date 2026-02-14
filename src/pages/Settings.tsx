@@ -8,11 +8,19 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, Lock, Shield, User, Mail, Calendar, Wallet, Package, TrendingUp, Copy, Check } from "lucide-react";
+import { LogOut, Lock, Shield, User, Mail, Calendar, Wallet, Package, TrendingUp, Copy, Check, Plus, Trash2, Globe, Bell } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Investment = Tables<"investments">;
+
+interface WithdrawalWallet {
+  id: string;
+  network: string;
+  address: string;
+}
+
+const NETWORKS = ["USDT TRC20", "BTC", "ETH", "SOL"];
 
 const Settings = () => {
   const { profile, user, signOut } = useAuth();
@@ -23,11 +31,21 @@ const Settings = () => {
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [copied, setCopied] = useState(false);
 
+  // Withdrawal wallets (stored in localStorage since no DB table)
+  const [withdrawalWallets, setWithdrawalWallets] = useState<WithdrawalWallet[]>([]);
+  const [newWalletNetwork, setNewWalletNetwork] = useState(NETWORKS[0]);
+  const [newWalletAddress, setNewWalletAddress] = useState("");
+  const [showAddWallet, setShowAddWallet] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     supabase.from("investments").select("*").eq("user_id", user.id).eq("status", "active")
       .order("created_at", { ascending: false })
       .then(({ data }) => setInvestments(data || []));
+
+    // Load saved withdrawal wallets
+    const saved = localStorage.getItem(`withdrawal_wallets_${user.id}`);
+    if (saved) setWithdrawalWallets(JSON.parse(saved));
   }, [user]);
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
@@ -57,6 +75,31 @@ const Settings = () => {
     navigator.clipboard.writeText(profile?.capvest_id || "");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const addWithdrawalWallet = () => {
+    if (!newWalletAddress.trim()) {
+      toast({ title: "Error", description: "Please enter a wallet address", variant: "destructive" });
+      return;
+    }
+    const newWallet: WithdrawalWallet = {
+      id: crypto.randomUUID(),
+      network: newWalletNetwork,
+      address: newWalletAddress.trim(),
+    };
+    const updated = [...withdrawalWallets, newWallet];
+    setWithdrawalWallets(updated);
+    if (user) localStorage.setItem(`withdrawal_wallets_${user.id}`, JSON.stringify(updated));
+    setNewWalletAddress("");
+    setShowAddWallet(false);
+    toast({ title: "Wallet added", description: `${newWalletNetwork} withdrawal address saved` });
+  };
+
+  const removeWallet = (id: string) => {
+    const updated = withdrawalWallets.filter(w => w.id !== id);
+    setWithdrawalWallets(updated);
+    if (user) localStorage.setItem(`withdrawal_wallets_${user.id}`, JSON.stringify(updated));
+    toast({ title: "Wallet removed" });
   };
 
   return (
@@ -91,7 +134,7 @@ const Settings = () => {
         </motion.div>
 
         {/* Account Overview */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Card className="bg-card/15 border-border/15 overflow-hidden">
             <CardContent className="p-0 divide-y divide-border/10">
               {[
@@ -113,7 +156,76 @@ const Settings = () => {
           </Card>
         </motion.div>
 
-        {/* Active Investments Detail */}
+        {/* Withdrawal Wallets */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="bg-card/15 border-border/15 overflow-hidden">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border/10">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-muted-foreground/50" />
+                  <h3 className="text-xs font-bold">Withdrawal Wallets</h3>
+                </div>
+                <button
+                  onClick={() => setShowAddWallet(!showAddWallet)}
+                  className="flex items-center gap-1 text-[10px] text-primary font-semibold hover:underline"
+                >
+                  <Plus className="h-3 w-3" /> Add
+                </button>
+              </div>
+
+              {showAddWallet && (
+                <div className="px-6 py-4 border-b border-border/10 space-y-3 bg-card/10">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-semibold">Network</Label>
+                    <select
+                      value={newWalletNetwork}
+                      onChange={e => setNewWalletNetwork(e.target.value)}
+                      className="w-full h-10 rounded-xl bg-secondary/20 border border-border/15 px-3 text-xs"
+                    >
+                      {NETWORKS.map(n => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-semibold">Wallet Address</Label>
+                    <Input
+                      value={newWalletAddress}
+                      onChange={e => setNewWalletAddress(e.target.value)}
+                      placeholder="Enter wallet address..."
+                      className="h-10 bg-secondary/20 border-border/15 rounded-xl text-xs"
+                    />
+                  </div>
+                  <Button onClick={addWithdrawalWallet} size="sm" className="w-full h-9 text-xs font-bold rounded-xl">
+                    Save Wallet
+                  </Button>
+                </div>
+              )}
+
+              {withdrawalWallets.length === 0 && !showAddWallet ? (
+                <div className="px-6 py-6 text-center">
+                  <Wallet className="mx-auto h-6 w-6 text-muted-foreground/20 mb-2" />
+                  <p className="text-[11px] text-muted-foreground/40">No withdrawal wallets saved</p>
+                  <p className="text-[10px] text-muted-foreground/25 mt-0.5">Add a wallet to speed up withdrawals</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border/8">
+                  {withdrawalWallets.map(w => (
+                    <div key={w.id} className="flex items-center justify-between px-6 py-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold text-primary">{w.network}</p>
+                        <p className="text-[10px] font-mono text-muted-foreground/40 truncate">{w.address}</p>
+                      </div>
+                      <button onClick={() => removeWallet(w.id)} className="text-destructive/50 hover:text-destructive transition-colors p-1">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Active Investments */}
         {investments.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <Card className="bg-card/15 border-border/15 overflow-hidden">

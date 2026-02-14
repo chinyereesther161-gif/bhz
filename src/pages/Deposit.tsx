@@ -136,7 +136,7 @@ const Deposit = () => {
   if (wallets.length === 0) {
     return (
       <AppLayout>
-        <div className="mx-auto max-w-lg flex flex-col items-center justify-center py-20 text-center space-y-3">
+        <div className="mx-auto max-w-md w-full px-4 flex flex-col items-center justify-center py-20 text-center space-y-3">
           <Wallet className="h-10 w-10 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground/60">No deposit wallets assigned yet. Please contact support.</p>
         </div>
@@ -146,7 +146,7 @@ const Deposit = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-lg w-full px-4 space-y-5">
+      <div className="mx-auto max-w-md w-full px-4 space-y-4">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-1">

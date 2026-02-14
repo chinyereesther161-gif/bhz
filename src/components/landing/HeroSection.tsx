@@ -55,13 +55,14 @@ const HeroSection = () => {
 
             {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              <Button asChild size="lg" className="h-13 gap-2 rounded-xl px-8 text-sm font-bold shadow-[0_8px_30px_hsl(43_100%_50%/0.25)] hover:shadow-[0_12px_40px_hsl(43_100%_50%/0.35)] transition-all duration-300">
+              <Button asChild size="lg" className="h-14 gap-2.5 rounded-xl px-10 text-sm font-bold shadow-[0_8px_32px_hsl(43_100%_50%/0.3)] hover:shadow-[0_14px_48px_hsl(43_100%_50%/0.4)] hover:scale-[1.02] transition-all duration-300">
                 <Link to="/signup">
                   Start Trading Now <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-13 gap-2 rounded-xl px-8 text-sm font-semibold border-border/40 bg-card/30 backdrop-blur-sm hover:bg-card/60">
+              <Button asChild variant="outline" size="lg" className="h-14 gap-2.5 rounded-xl px-10 text-sm font-bold border-primary/20 bg-primary/[0.06] text-primary hover:bg-primary/[0.12] hover:border-primary/30 hover:scale-[1.02] transition-all duration-300 backdrop-blur-sm">
                 <Link to="/signin">
+                  <BarChart3 className="h-4 w-4" />
                   View Dashboard
                 </Link>
               </Button>
