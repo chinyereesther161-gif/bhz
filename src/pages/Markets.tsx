@@ -86,7 +86,8 @@ const Markets = () => {
                           return `${j === 0 ? "M" : "L"}${x},${y}`;
                         }).join(" ")
                       : "";
-                    const isUp = c.price_change_percentage_24h >= 0;
+                    const change24h = c.price_change_percentage_24h ?? 0;
+                    const isUp = change24h >= 0;
 
                     return (
                       <motion.div
@@ -118,7 +119,7 @@ const Markets = () => {
                         <div className="w-14 text-right">
                           <span className={`inline-flex items-center gap-0.5 text-[11px] font-bold ${isUp ? "text-success" : "text-destructive"}`}>
                             {isUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                            {isUp ? "+" : ""}{c.price_change_percentage_24h.toFixed(1)}%
+                            {isUp ? "+" : ""}{change24h.toFixed(1)}%
                           </span>
                         </div>
                       </motion.div>
