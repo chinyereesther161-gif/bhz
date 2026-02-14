@@ -61,8 +61,8 @@ const steps = [
 ];
 
 const VisualGuideSection = () => (
-  <section className="relative py-28 px-4 section-glow">
-    <div className="pointer-events-none absolute right-0 top-1/4 h-[600px] w-[400px] rounded-full bg-primary/[0.03] blur-[180px]" />
+  <section className="relative py-28 px-4 section-glow overflow-hidden">
+    <div className="pointer-events-none absolute right-0 top-1/4 h-[400px] w-[300px] rounded-full bg-primary/[0.03] blur-[180px]" />
 
     <div className="container mx-auto max-w-5xl">
       <motion.div
