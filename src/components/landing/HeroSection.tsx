@@ -106,25 +106,16 @@ const HeroSection = () => {
               </div>
 
               <div className="p-5 space-y-4">
-                {/* Portfolio chart */}
-                <div className="relative h-36 overflow-hidden rounded-xl bg-secondary/20 border border-border/15">
-                  <svg viewBox="0 0 500 150" className="w-full h-full" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="heroChartFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(43 100% 50%)" stopOpacity="0.2" />
-                        <stop offset="100%" stopColor="hsl(43 100% 50%)" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,120 C40,115 60,100 100,90 C140,80 160,85 200,70 C240,55 260,60 300,45 C340,30 380,35 420,25 C450,20 470,18 500,15" fill="none" stroke="hsl(43 100% 50%)" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M0,120 C40,115 60,100 100,90 C140,80 160,85 200,70 C240,55 260,60 300,45 C340,30 380,35 420,25 C450,20 470,18 500,15 V150 H0 Z" fill="url(#heroChartFill)" />
-                  </svg>
-                  <div className="absolute top-3 left-4">
-                    <p className="text-[9px] text-muted-foreground/50 font-medium uppercase tracking-wider">Portfolio Performance</p>
-                    <p className="text-xl font-black mt-0.5">$97,842.50</p>
+              {/* AI Trading Status */}
+                <div className="relative h-36 overflow-hidden rounded-xl bg-secondary/20 border border-border/15 flex flex-col items-center justify-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-success animate-pulse-glow" />
+                    <span className="text-sm font-bold text-success">AI Engine Active</span>
                   </div>
-                  <div className="absolute top-3 right-3 flex items-center gap-1 rounded-lg bg-success/10 border border-success/20 px-2 py-0.5">
+                  <p className="text-[10px] text-muted-foreground/50 text-center px-6">Monitoring 500+ markets across crypto, forex & commodities in real-time</p>
+                  <div className="flex items-center gap-1 rounded-lg bg-success/10 border border-success/20 px-2.5 py-1">
                     <TrendingUp className="h-3 w-3 text-success" />
-                    <span className="text-[11px] font-bold text-success">+12.4%</span>
+                    <span className="text-[11px] font-bold text-success">94.7% Win Rate</span>
                   </div>
                 </div>
 
