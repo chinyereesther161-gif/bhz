@@ -33,15 +33,15 @@ const MarketTicker = () => {
   const items = [...prices, ...prices];
 
   return (
-    <div className="w-full overflow-hidden border-y border-border bg-secondary/30 py-3">
+    <div className="w-full overflow-hidden border-y border-border/30 bg-card/20 py-3">
       <div className="animate-ticker flex whitespace-nowrap">
         {items.map((item, i) => (
-          <div key={i} className="mx-6 inline-flex items-center gap-2 text-sm">
-            <span className="font-semibold text-foreground">{item.symbol}</span>
-            <span className="text-muted-foreground">
+          <div key={i} className="mx-5 inline-flex items-center gap-2 text-xs">
+            <span className="font-semibold text-foreground/80">{item.symbol}</span>
+            <span className="text-muted-foreground font-mono">
               ${item.price < 10 ? item.price.toFixed(4) : item.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </span>
-            <span className={`inline-flex items-center gap-0.5 ${item.change >= 0 ? "text-success" : "text-destructive"}`}>
+            <span className={`inline-flex items-center gap-0.5 font-medium ${item.change >= 0 ? "text-success" : "text-destructive"}`}>
               {item.change >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {item.change >= 0 ? "+" : ""}{item.change.toFixed(2)}%
             </span>
