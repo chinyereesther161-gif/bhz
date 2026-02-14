@@ -12,8 +12,6 @@ export interface MarketCoin {
   image: string;
 }
 
-const COINGECKO_API = "https://api.coingecko.com/api/v3";
-
 export const useMarketData = (count = 10) => {
   const [data, setData] = useState<MarketCoin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,10 +20,19 @@ export const useMarketData = (count = 10) => {
 
   const fetchData = useCallback(async () => {
     try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
       const res = await fetch(
-        `${COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${count}&page=1&sparkline=true&price_change_percentage=24h`,
-        { headers: { Accept: "application/json" } }
+        `${supabaseUrl}/functions/v1/market-data?count=${count}`,
+        {
+          headers: {
+            "Authorization": `Bearer ${anonKey}`,
+            "apikey": anonKey,
+          },
+        }
       );
+
       if (!res.ok) throw new Error(`API error: ${res.status}`);
       const json: MarketCoin[] = await res.json();
       if (Array.isArray(json) && json.length > 0) {
@@ -43,7 +50,6 @@ export const useMarketData = (count = 10) => {
 
   useEffect(() => {
     fetchData();
-    // Refresh every 30s
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, [fetchData]);
