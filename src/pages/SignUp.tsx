@@ -29,7 +29,7 @@ const SignUp = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { name } },
@@ -37,6 +37,9 @@ const SignUp = () => {
     setLoading(false);
     if (error) {
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+    } else if (data.session) {
+      toast({ title: "Welcome to Capvest AI! 🎉", description: "Your account has been created. Enjoy your $10 welcome bonus!" });
+      navigate("/dashboard");
     } else {
       toast({ title: "Account created!", description: "You can now sign in with your credentials." });
       navigate("/signin");
