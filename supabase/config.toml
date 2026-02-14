@@ -1,1 +1,4 @@
 project_id = "wddeivyttkciiyrnbcti"
+
+[functions.daily-investment-reminder]
+verify_jwt = false
