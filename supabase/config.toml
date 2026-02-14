@@ -2,3 +2,9 @@ project_id = "wddeivyttkciiyrnbcti"
 
 [functions.daily-investment-reminder]
 verify_jwt = false
+
+[functions.market-data]
+verify_jwt = false
+
+[functions.weekly-profit-clear]
+verify_jwt = false
