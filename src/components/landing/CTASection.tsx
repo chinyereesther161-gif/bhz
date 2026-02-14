@@ -38,6 +38,11 @@ const CTASection = () => (
                   Create Free Account <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 gap-2.5 rounded-xl px-10 text-sm font-bold border-primary/20 bg-primary/[0.06] text-primary hover:bg-primary/[0.12] hover:border-primary/30 hover:scale-[1.02] transition-all duration-300">
+                <Link to="/signin">
+                  Sign In
+                </Link>
+              </Button>
             </div>
 
             <div className="mt-8 flex items-center justify-center gap-8 text-xs text-muted-foreground/50">

@@ -14,11 +14,9 @@ type Investment = Tables<"investments">;
 
 const Dashboard = () => {
   const { profile, user } = useAuth();
-  const { data: marketData } = useMarketData(6);
+  const { data: marketData, loading: marketLoading } = useMarketData(6);
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [aiTrades, setAiTrades] = useState<{ pair: string; type: string; profit: string; time: string }[]>([]);
 
-  // Fetch user investments
   useEffect(() => {
     if (!user) return;
     supabase.from("investments").select("*").eq("user_id", user.id).eq("status", "active")
@@ -26,44 +24,8 @@ const Dashboard = () => {
       .then(({ data }) => setInvestments(data || []));
   }, [user]);
 
-  // Generate AI trades from real market data
-  useEffect(() => {
-    if (marketData.length === 0) return;
-    const generateTrade = () => {
-      const coin = marketData[Math.floor(Math.random() * marketData.length)];
-      const isLong = coin.price_change_percentage_24h >= 0;
-      const profitPct = (Math.random() * 4 + 0.5).toFixed(1);
-      const isWin = Math.random() > 0.12;
-      return {
-        pair: `${coin.symbol.toUpperCase()}/USD`,
-        type: isLong ? "Long" : "Short",
-        profit: `${isWin ? "+" : "-"}${profitPct}%`,
-        time: `${Math.floor(Math.random() * 30) + 1}m ago`,
-      };
-    };
-    setAiTrades(Array.from({ length: 5 }, generateTrade));
-    const interval = setInterval(() => {
-      setAiTrades(prev => [generateTrade(), ...prev.slice(0, 4)]);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [marketData]);
-
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
   const balance = profile?.balance ?? 0;
-
-  // Use real BTC sparkline for the portfolio chart
-  const btcSparkline = marketData[0]?.sparkline_in_7d?.price;
-  const chartPoints = btcSparkline?.slice(-48) || [];
-  const maxVal = Math.max(...(chartPoints.length ? chartPoints : [1]));
-  const minVal = Math.min(...(chartPoints.length ? chartPoints : [0]));
-  const range = maxVal - minVal || 1;
-  const pathD = chartPoints
-    .map((v, i) => {
-      const x = (i / (chartPoints.length - 1)) * 400;
-      const y = 100 - ((v - minVal) / range) * 80;
-      return `${i === 0 ? "M" : "L"}${x},${y}`;
-    })
-    .join(" ");
 
   return (
     <AppLayout>
@@ -77,35 +39,36 @@ const Dashboard = () => {
           <p className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">{profile?.capvest_id}</p>
         </motion.div>
 
-        {/* Portfolio Card */}
+        {/* Portfolio Card - Redesigned without chart */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
           <Card className="glow-border overflow-hidden">
             <CardContent className="relative p-0">
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-success/[0.02]" />
-              <div className="relative p-5 pb-3">
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Total Balance</p>
-                <p className="mt-1 text-3xl font-black text-gradient-gold">
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Total Balance</p>
+                  <div className="flex items-center gap-1.5 rounded-full bg-success/10 border border-success/20 px-2.5 py-1">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
+                    </span>
+                    <span className="text-[9px] font-bold text-success">Active</span>
+                  </div>
+                </div>
+                <p className="text-3xl font-black text-gradient-gold">
                   ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </p>
-              </div>
-              {pathD && chartPoints.length > 1 && (
-                <div className="h-16 px-5 pb-2 opacity-60">
-                  <svg viewBox="0 0 400 100" className="w-full h-full" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="dashChart" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(43 100% 50%)" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="hsl(43 100% 50%)" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path d={pathD} fill="none" stroke="hsl(43 100% 50%)" strokeWidth="2" strokeLinecap="round" />
-                    <path d={`${pathD} V100 H0 Z`} fill="url(#dashChart)" />
-                  </svg>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`flex items-center gap-1 text-xs font-bold ${(profile?.weekly_pnl ?? 0) >= 0 ? "text-success" : "text-destructive"}`}>
+                    {(profile?.weekly_pnl ?? 0) >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                    {(profile?.weekly_pnl ?? 0) >= 0 ? "+" : ""}${Math.abs(profile?.weekly_pnl ?? 0).toFixed(2)}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/30">this week</span>
                 </div>
-              )}
-              <div className="grid grid-cols-4 gap-px bg-border/15">
+              </div>
+              <div className="grid grid-cols-3 gap-px bg-border/15">
                 {[
                   { label: "Invested", value: `$${totalInvested.toLocaleString()}`, color: "text-primary" },
-                  { label: "Weekly P&L", value: `${(profile?.weekly_pnl ?? 0) >= 0 ? "+" : ""}$${(profile?.weekly_pnl ?? 0).toFixed(2)}`, color: (profile?.weekly_pnl ?? 0) >= 0 ? "text-success" : "text-destructive" },
                   { label: "Plans", value: `${investments.length}`, color: "text-foreground" },
                   { label: "Payout", value: "Monday", color: "text-primary" },
                 ].map(item => (
@@ -177,94 +140,38 @@ const Dashboard = () => {
                 </h3>
                 <Link to="/markets" className="text-[10px] text-primary font-semibold hover:underline">View All →</Link>
               </div>
-              <div className="divide-y divide-border/8">
-                {marketData.slice(0, 5).map(coin => {
-                  const sparkline = coin.sparkline_in_7d?.price;
-                  const miniPath = sparkline
-                    ? sparkline.slice(-24).map((v, i, arr) => {
-                        const min = Math.min(...arr);
-                        const max = Math.max(...arr);
-                        const r = max - min || 1;
-                        const x = (i / (arr.length - 1)) * 60;
-                        const y = 20 - ((v - min) / r) * 18;
-                        return `${i === 0 ? "M" : "L"}${x},${y}`;
-                      }).join(" ")
-                    : "";
-                  return (
-                    <div key={coin.id} className="flex items-center gap-3 px-5 py-3 hover:bg-card/20 transition-colors">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
+              {marketLoading ? (
+                <div className="p-5 space-y-3">
+                  {[1,2,3].map(i => <div key={i} className="h-10 bg-card/20 rounded-lg animate-pulse" />)}
+                </div>
+              ) : (
+                <div className="divide-y divide-border/8">
+                  {marketData.slice(0, 5).map(coin => {
+                    const isUp = coin.price_change_percentage_24h >= 0;
+                    return (
+                      <div key={coin.id} className="flex items-center gap-3 px-5 py-3 hover:bg-card/20 transition-colors">
+                        {coin.image && <img src={coin.image} alt={coin.name} className="h-6 w-6 rounded-full" />}
+                        <div className="flex-1 min-w-0">
                           <span className="text-xs font-bold uppercase">{coin.symbol}</span>
-                          <span className="text-[10px] text-muted-foreground/30">{coin.name}</span>
+                          <span className="text-[10px] text-muted-foreground/30 ml-1.5">{coin.name}</span>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-xs font-bold font-mono">${formatPrice(coin.current_price)}</p>
+                          <p className={`text-[10px] font-semibold ${isUp ? "text-success" : "text-destructive"}`}>
+                            {isUp ? "+" : ""}{coin.price_change_percentage_24h.toFixed(2)}%
+                          </p>
                         </div>
                       </div>
-                      {miniPath && (
-                        <svg viewBox="0 0 60 22" className="h-5 w-12 shrink-0">
-                          <path d={miniPath} fill="none" stroke={coin.price_change_percentage_24h >= 0 ? "hsl(155 72% 42%)" : "hsl(0 72% 51%)"} strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                      )}
-                      <div className="text-right shrink-0">
-                        <p className="text-xs font-bold font-mono">${formatPrice(coin.current_price)}</p>
-                        <p className={`text-[10px] font-semibold ${coin.price_change_percentage_24h >= 0 ? "text-success" : "text-destructive"}`}>
-                          {coin.price_change_percentage_24h >= 0 ? "+" : ""}{coin.price_change_percentage_24h.toFixed(2)}%
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Recent AI Trades - driven by real market data */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="bg-card/15 border-border/15 overflow-hidden">
-            <CardContent className="p-0">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-border/10">
-                <h3 className="text-xs font-bold flex items-center gap-1.5">
-                  <Activity className="h-3.5 w-3.5 text-success" />
-                  Recent AI Trades
-                </h3>
-                <Link to="/trading" className="text-[10px] text-primary font-semibold hover:underline">Live Feed →</Link>
-              </div>
-              <div className="divide-y divide-border/8">
-                {aiTrades.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between px-5 py-2.5 hover:bg-card/20 transition-colors">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-bold">{t.pair}</span>
-                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${t.type === "Long" ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>{t.type}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`text-xs font-bold ${t.profit.startsWith("+") ? "text-success" : "text-destructive"}`}>{t.profit}</span>
-                      <span className="text-[9px] text-muted-foreground/25">{t.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* AI Performance */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }} className="grid grid-cols-3 gap-2.5">
-          {[
-            { icon: TrendingUp, label: "Win Rate", value: "94.7%", color: "text-success" },
-            { icon: Zap, label: "Trades/Day", value: "847", color: "text-primary" },
-            { icon: BarChart3, label: "Avg Return", value: "12.3%", color: "text-foreground" },
-          ].map(s => (
-            <Card key={s.label} className="bg-card/20 border-border/15">
-              <CardContent className="relative p-3 text-center">
-                <s.icon className={`mx-auto h-3.5 w-3.5 ${s.color} mb-1.5 opacity-60`} />
-                <p className={`text-sm font-black ${s.color}`}>{s.value}</p>
-                <p className="text-[8px] font-semibold text-muted-foreground/35 uppercase tracking-wider mt-0.5">{s.label}</p>
-              </CardContent>
-            </Card>
-          ))}
         </motion.div>
 
         {/* Quick Links */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28 }} className="grid grid-cols-2 gap-2.5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 gap-2.5">
           <Link to="/trading" className="group rounded-2xl border border-border/15 bg-card/10 p-4 transition-all hover:border-primary/15 hover:bg-card/30">
             <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/[0.08] group-hover:bg-primary/[0.15] transition-colors">
               <Brain className="h-4 w-4 text-primary" />
@@ -282,7 +189,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* AI Engine Status */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
           <div className="flex items-center gap-3 rounded-2xl border border-success/15 bg-success/[0.03] p-3.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-success/10">
               <Shield className="h-4 w-4 text-success" />
@@ -295,7 +202,7 @@ const Dashboard = () => {
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
                 </span>
               </div>
-              <p className="text-[9px] text-muted-foreground/35 mt-0.5">Monitoring 500+ markets • 847 trades executed today</p>
+              <p className="text-[9px] text-muted-foreground/35 mt-0.5">Monitoring 500+ markets • Trading 24/7</p>
             </div>
           </div>
         </motion.div>
