@@ -81,7 +81,6 @@ const SignUp = () => {
       },
     });
 
-    // Artificial loading for professional feel
     await new Promise(resolve => setTimeout(resolve, 4000));
 
     setLoading(false);
@@ -103,11 +102,7 @@ const SignUp = () => {
       {/* Loading overlay */}
       {creatingAccount && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center gap-6"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-6">
             <div className="relative">
               <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-2xl shadow-primary/25">
                 <span className="font-black text-primary-foreground text-3xl">CV</span>
@@ -118,31 +113,16 @@ const SignUp = () => {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-lg font-black">Creating Your Account</h2>
-              <p className="text-sm text-muted-foreground/70">Setting up your trading environment...</p>
+              <p className="text-sm text-muted-foreground">Setting up your trading environment...</p>
             </div>
             <div className="flex flex-col items-center gap-2 mt-4">
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="text-xs text-muted-foreground/60 flex items-center gap-2"
-              >
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-muted-foreground flex items-center gap-2">
                 <Shield className="h-3 w-3 text-success" /> Securing your account
               </motion.p>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
-                className="text-xs text-muted-foreground/60 flex items-center gap-2"
-              >
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="text-xs text-muted-foreground flex items-center gap-2">
                 <Gift className="h-3 w-3 text-primary" /> Adding $10 welcome bonus
               </motion.p>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.5 }}
-                className="text-xs text-muted-foreground/60 flex items-center gap-2"
-              >
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }} className="text-xs text-muted-foreground flex items-center gap-2">
                 <BarChart3 className="h-3 w-3 text-success" /> Connecting to AI engine
               </motion.p>
             </div>
@@ -164,11 +144,10 @@ const SignUp = () => {
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-2 w-16 rounded-full bg-primary/10 blur-md" />
           </div>
           <h2 className="text-3xl font-black mb-3 tracking-tight">Start Your Trading Journey</h2>
-          <p className="text-muted-foreground/70 leading-relaxed text-sm">
+          <p className="text-muted-foreground leading-relaxed text-sm">
             Join thousands of traders using our professional trading engine to grow their portfolios with institutional strategies.
           </p>
 
-          {/* Benefits */}
           <div className="mt-10 space-y-3 text-left max-w-xs mx-auto">
             {[
               { icon: Gift, text: "$10 welcome bonus on sign up", color: "text-primary" },
@@ -178,12 +157,12 @@ const SignUp = () => {
             ].map(b => (
               <div key={b.text} className="flex items-center gap-3 rounded-xl border border-border/10 bg-card/15 p-3">
                 <b.icon className={`h-4 w-4 ${b.color} shrink-0`} />
-                <span className="text-xs text-muted-foreground/70">{b.text}</span>
+                <span className="text-xs text-muted-foreground">{b.text}</span>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] text-muted-foreground/50">
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> 12,400+ traders</span>
             <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> Fully encrypted</span>
           </div>
@@ -193,7 +172,6 @@ const SignUp = () => {
       {/* Right form */}
       <div className="flex flex-1 items-center justify-center px-5 py-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
-          {/* Mobile logo */}
           <div className="mb-6">
             <Link to="/" className="inline-flex items-center gap-2.5 mb-6 lg:hidden">
               <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 shadow-lg shadow-primary/20">
@@ -205,60 +183,51 @@ const SignUp = () => {
               </div>
             </Link>
             <h1 className="text-2xl font-black tracking-tight">Create Account</h1>
-            <p className="mt-2 text-sm text-muted-foreground/60">Start trading in under 2 minutes</p>
+            <p className="mt-2 text-sm text-muted-foreground">Start trading in under 2 minutes</p>
           </div>
 
-          {/* Welcome bonus banner — mobile */}
           <div className="mb-5 flex items-center gap-3 rounded-xl border border-primary/15 bg-primary/[0.04] p-3 lg:hidden">
             <Gift className="h-5 w-5 text-primary shrink-0" />
             <div>
               <p className="text-[11px] font-bold text-primary">$10 Welcome Bonus</p>
-              <p className="text-[9px] text-muted-foreground/60">Credited instantly on registration</p>
+              <p className="text-[9px] text-muted-foreground">Credited instantly on registration</p>
             </div>
           </div>
 
           <form onSubmit={handleSignUp} className="space-y-3.5">
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Full Name</Label>
+              <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Full Name</Label>
               <Input id="name" placeholder="John Doe" value={name} onChange={e => setName(e.target.value)} required className="h-11 bg-card/20 border-border/20 rounded-xl text-sm" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Email Address</Label>
+              <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Email Address</Label>
               <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="h-11 bg-card/20 border-border/20 rounded-xl text-sm" />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Phone Number</Label>
+              <Label htmlFor="phone" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Phone Number</Label>
               <div className="flex gap-2">
-                <select
-                  value={countryCode}
-                  onChange={e => setCountryCode(e.target.value)}
-                  className="h-11 w-28 rounded-xl bg-card/20 border border-border/20 px-2 text-xs font-mono text-foreground"
-                >
+                <select value={countryCode} onChange={e => setCountryCode(e.target.value)}
+                  className="h-11 w-28 rounded-xl bg-card/20 border border-border/20 px-2 text-xs font-mono text-foreground">
                   {countryCodes.map(c => (
                     <option key={c.code + c.country} value={c.code}>{c.country} {c.code}</option>
                   ))}
                 </select>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Phone number"
-                  value={phoneNumber}
+                <Input id="phone" type="tel" placeholder="Phone number" value={phoneNumber}
                   onChange={e => setPhoneNumber(e.target.value.replace(/\D/g, ""))}
-                  className="h-11 flex-1 bg-card/20 border-border/20 rounded-xl text-sm"
-                />
+                  className="h-11 flex-1 bg-card/20 border-border/20 rounded-xl text-sm" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Password</Label>
+              <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Password</Label>
               <div className="relative">
                 <Input id="password" type={showPassword ? "text" : "password"} placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)} required className="h-11 bg-card/20 border-border/20 rounded-xl pr-11 text-sm" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-foreground transition-colors">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Confirm Password</Label>
               <Input id="confirmPassword" type={showPassword ? "text" : "password"} placeholder="Re-enter password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="h-11 bg-card/20 border-border/20 rounded-xl text-sm" />
             </div>
 
@@ -270,30 +239,22 @@ const SignUp = () => {
             )}
 
             <Button type="submit" className="w-full h-12 gap-2 font-bold rounded-xl shadow-lg shadow-primary/15 hover:shadow-primary/25 transition-all" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> Creating account...
-                </>
-              ) : (
-                <>Create Account <ArrowRight className="h-4 w-4" /></>
-              )}
+              {loading ? (<><Loader2 className="h-4 w-4 animate-spin" /> Creating account...</>) : (<>Create Account <ArrowRight className="h-4 w-4" /></>)}
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="my-5 flex items-center gap-3">
             <div className="flex-1 h-px bg-border/15" />
-            <span className="text-[9px] text-muted-foreground/40 font-semibold uppercase tracking-widest">or</span>
+            <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest">or</span>
             <div className="flex-1 h-px bg-border/15" />
           </div>
 
-          <p className="text-center text-xs text-muted-foreground/60">
+          <p className="text-center text-xs text-muted-foreground">
             Already have an account?{" "}
             <Link to="/signin" className="text-primary font-bold hover:underline">Sign In</Link>
           </p>
 
-          {/* Mobile trust badges */}
-          <div className="mt-6 flex items-center justify-center gap-5 text-[9px] text-muted-foreground/50 lg:hidden">
+          <div className="mt-6 flex items-center justify-center gap-5 text-[9px] text-muted-foreground lg:hidden">
             <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secured</span>
             <span className="flex items-center gap-1"><Users className="h-3 w-3" /> 12,400+</span>
             <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /> Weekly</span>

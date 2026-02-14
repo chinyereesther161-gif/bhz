@@ -55,13 +55,8 @@ const networkMeta: Record<string, { name: string; symbol: string; color: string;
 };
 
 const networks = Object.entries(networkMeta).map(([key, val]) => ({
-  id: key,
-  name: val.name,
-  symbol: val.symbol,
-  color: val.color,
-  logoSvg: val.logoSvg,
+  id: key, name: val.name, symbol: val.symbol, color: val.color, logoSvg: val.logoSvg,
 }));
-
 
 const Withdraw = () => {
   const { user, profile } = useAuth();
@@ -71,48 +66,54 @@ const Withdraw = () => {
   const [amount, setAmount] = useState("");
   const [email, setEmail] = useState(profile?.email || "");
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1-3 = wizard
+  const [step, setStep] = useState(1);
 
   const numAmount = Number(amount);
   const balance = profile?.balance ?? 0;
 
   const handleSubmit = async () => {
     if (!user) return;
-    if (numAmount < 50) {
-      toast({ title: "Minimum $50", description: "Minimum withdrawal is $50.", variant: "destructive" });
-      return;
-    }
-    if (numAmount > balance) {
-      toast({ title: "Insufficient balance", variant: "destructive" });
-      return;
-    }
-    if (!walletAddress.trim()) {
-      toast({ title: "Error", description: "Enter your wallet address.", variant: "destructive" });
-      return;
-    }
+    if (numAmount < 50) { toast({ title: "Minimum $50", description: "Minimum withdrawal is $50.", variant: "destructive" }); return; }
+    if (numAmount > balance) { toast({ title: "Insufficient balance", variant: "destructive" }); return; }
+    if (!walletAddress.trim()) { toast({ title: "Error", description: "Enter your wallet address.", variant: "destructive" }); return; }
     setLoading(true);
     const { error } = await supabase.from("withdrawals").insert({
-      user_id: user.id,
-      amount: numAmount,
-      network: selectedNetwork.id,
-      wallet_address: walletAddress.trim(),
-      email: email.trim(),
+      user_id: user.id, amount: numAmount, network: selectedNetwork.id, wallet_address: walletAddress.trim(), email: email.trim(),
     });
     setLoading(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Withdrawal submitted", description: "Processing within 24 hours." });
-      setAmount("");
-      setWalletAddress("");
-      setStep(1);
-    }
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Withdrawal submitted", description: "Processing within 24 hours." }); setAmount(""); setWalletAddress(""); setStep(1); }
   };
+
+  const renderStepIndicator = (currentStep: number) => (
+    <div className="flex items-center gap-1">
+      {["Network", "Details", "Confirm"].map((label, i) => {
+        const num = i + 1;
+        const active = currentStep === num;
+        const done = currentStep > num;
+        return (
+          <div key={label} className="flex items-center gap-1 flex-1">
+            <button onClick={() => { if (done) setStep(num); }}
+              className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[10px] font-bold transition-all w-full justify-center ${
+                active ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                : done ? "bg-success/15 text-success border border-success/20 cursor-pointer"
+                : "bg-card/15 text-muted-foreground border border-border/10"
+              }`}>
+              <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black shrink-0 ${
+                done ? "bg-success text-white" : active ? "bg-white/20" : "bg-muted/10"
+              }`}>{done ? "✓" : num}</span>
+              {label}
+            </button>
+            {i < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground shrink-0" />}
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <AppLayout>
       <div className="mx-auto max-w-md w-full px-1 space-y-5">
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -122,14 +123,13 @@ const Withdraw = () => {
             </div>
             <div>
               <h1 className="text-xl font-black tracking-tight">Withdraw Funds</h1>
-              <p className="text-[11px] text-muted-foreground/50">
+              <p className="text-[11px] text-muted-foreground">
                 Balance: <span className="text-primary font-bold">${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span> • Min $50
               </p>
             </div>
           </div>
         </motion.div>
 
-        {/* Trust Strip */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}
           className="flex items-center justify-between rounded-2xl border border-border/15 bg-card/10 px-4 py-3"
         >
@@ -140,61 +140,29 @@ const Withdraw = () => {
           ].map(b => (
             <div key={b.label} className="flex items-center gap-1.5">
               <b.icon className={`h-3.5 w-3.5 ${b.color}`} />
-              <span className="text-[10px] font-bold text-muted-foreground/60">{b.label}</span>
+              <span className="text-[10px] font-bold text-muted-foreground">{b.label}</span>
             </div>
           ))}
         </motion.div>
 
         <AnimatePresence mode="wait">
-
-          {/* Step 1 — Network */}
           {step === 1 && (
             <motion.div key="s1" initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 15 }} className="space-y-3">
-              {/* Step Indicator */}
-              <div className="flex items-center gap-1">
-                {["Network", "Details", "Confirm"].map((label, i) => {
-                  const num = i + 1;
-                  const active = step === num;
-                  const done = step > num;
-                  return (
-                    <div key={label} className="flex items-center gap-1 flex-1">
-                      <div className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[10px] font-bold transition-all w-full justify-center ${
-                        active ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                        : done ? "bg-success/15 text-success border border-success/20"
-                        : "bg-card/15 text-muted-foreground/25 border border-border/10"
-                      }`}>
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black shrink-0 ${
-                          done ? "bg-success text-white" : active ? "bg-white/20" : "bg-muted/10"
-                        }`}>{done ? "✓" : num}</span>
-                        {label}
-                      </div>
-                      {i < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground/10 shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
-
-              <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Select Network</p>
+              {renderStepIndicator(1)}
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Select Network</p>
               <div className="grid grid-cols-2 gap-3">
                 {networks.map(n => {
                   const sel = selectedNetwork.id === n.id;
                   return (
-                    <button
-                      key={n.id}
-                      onClick={() => { setSelectedNetwork(n); setStep(2); }}
+                    <button key={n.id} onClick={() => { setSelectedNetwork(n); setStep(2); }}
                       className={`group relative rounded-2xl border p-4 text-left transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] ${
-                        sel
-                          ? "border-primary/30 bg-primary/[0.06] shadow-lg shadow-primary/5"
-                          : "border-border/15 bg-card/10 hover:border-border/30 hover:bg-card/25"
-                      }`}
-                    >
+                        sel ? "border-primary/30 bg-primary/[0.06] shadow-lg shadow-primary/5" : "border-border/15 bg-card/10 hover:border-border/30 hover:bg-card/25"
+                      }`}>
                       <div className="flex flex-col items-center text-center gap-2.5">
-                        <div className="rounded-xl p-2" style={{ background: `${n.color}15` }}>
-                          {n.logoSvg}
-                        </div>
+                        <div className="rounded-xl p-2" style={{ background: `${n.color}15` }}>{n.logoSvg}</div>
                         <div>
                           <p className="text-sm font-black">{n.symbol}</p>
-                          <p className="text-[9px] text-muted-foreground/40 mt-0.5">{n.name}</p>
+                          <p className="text-[9px] text-muted-foreground mt-0.5">{n.name}</p>
                         </div>
                       </div>
                       {sel && (
@@ -209,62 +177,34 @@ const Withdraw = () => {
             </motion.div>
           )}
 
-          {/* Step 2 — Details */}
           {step === 2 && (
             <motion.div key="s2" initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 15 }} className="space-y-4">
-              {/* Step Indicator */}
-              <div className="flex items-center gap-1">
-                {["Network", "Details", "Confirm"].map((label, i) => {
-                  const num = i + 1;
-                  const active = 2 === num;
-                  const done = 2 > num;
-                  return (
-                    <div key={label} className="flex items-center gap-1 flex-1">
-                      <button onClick={() => { if (done) setStep(num); }}
-                        className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[10px] font-bold transition-all w-full justify-center ${
-                          active ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                          : done ? "bg-success/15 text-success border border-success/20 cursor-pointer"
-                          : "bg-card/15 text-muted-foreground/25 border border-border/10"
-                        }`}>
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black shrink-0 ${
-                          done ? "bg-success text-white" : active ? "bg-white/20" : "bg-muted/10"
-                        }`}>{done ? "✓" : num}</span>
-                        {label}
-                      </button>
-                      {i < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground/10 shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
-
+              {renderStepIndicator(2)}
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Transaction Details</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Transaction Details</p>
                 <button onClick={() => setStep(1)} className="flex items-center gap-1 text-[10px] text-primary font-semibold hover:underline">
                   <ChevronLeft className="h-3 w-3" /> Change
                 </button>
               </div>
-
-              {/* Selected network pill */}
               <div className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 border border-border/15 bg-card/15">
                 <div className="h-5 w-5">{selectedNetwork.logoSvg}</div>
                 <span className="text-[10px] font-bold">{selectedNetwork.symbol}</span>
               </div>
-
               <Card className="bg-card/15 border-border/15 overflow-hidden">
                 <CardContent className="p-4 space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">Email Address</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Email Address</Label>
                     <Input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className="h-11 bg-secondary/20 border-border/15 rounded-xl text-xs" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">{selectedNetwork.symbol} Wallet Address</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{selectedNetwork.symbol} Wallet Address</Label>
                     <Input value={walletAddress} onChange={e => setWalletAddress(e.target.value)} placeholder={`Paste your ${selectedNetwork.symbol} address`} className="h-11 bg-secondary/20 border-border/15 rounded-xl font-mono text-[11px]" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">Amount (USD)</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Amount (USD)</Label>
                     <div className="relative">
                       <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="50.00" min="50" className="h-11 bg-secondary/20 border-border/15 rounded-xl pl-7 text-xs" />
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground/40 font-bold">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-bold">$</span>
                     </div>
                     {numAmount > 0 && numAmount > balance && (
                       <p className="text-[10px] text-destructive font-medium flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Exceeds available balance</p>
@@ -273,11 +213,9 @@ const Withdraw = () => {
                       <p className="text-[10px] text-destructive font-medium flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Minimum withdrawal is $50</p>
                     )}
                   </div>
-                  <Button
-                    className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/15 gap-2"
+                  <Button className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/15 gap-2"
                     onClick={() => { if (walletAddress.trim() && numAmount >= 50 && numAmount <= balance) setStep(3); }}
-                    disabled={!walletAddress.trim() || numAmount < 50 || numAmount > balance}
-                  >
+                    disabled={!walletAddress.trim() || numAmount < 50 || numAmount > balance}>
                     Review Withdrawal <ArrowRight className="h-4 w-4" />
                   </Button>
                 </CardContent>
@@ -285,50 +223,23 @@ const Withdraw = () => {
             </motion.div>
           )}
 
-          {/* Step 3 — Confirm */}
           {step === 3 && (
             <motion.div key="s3" initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 15 }} className="space-y-4">
-              {/* Step Indicator */}
-              <div className="flex items-center gap-1">
-                {["Network", "Details", "Confirm"].map((label, i) => {
-                  const num = i + 1;
-                  const active = 3 === num;
-                  const done = 3 > num;
-                  return (
-                    <div key={label} className="flex items-center gap-1 flex-1">
-                      <button onClick={() => { if (done) setStep(num); }}
-                        className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-[10px] font-bold transition-all w-full justify-center ${
-                          active ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                          : done ? "bg-success/15 text-success border border-success/20 cursor-pointer"
-                          : "bg-card/15 text-muted-foreground/25 border border-border/10"
-                        }`}>
-                        <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-black shrink-0 ${
-                          done ? "bg-success text-white" : active ? "bg-white/20" : "bg-muted/10"
-                        }`}>{done ? "✓" : num}</span>
-                        {label}
-                      </button>
-                      {i < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground/10 shrink-0" />}
-                    </div>
-                  );
-                })}
-              </div>
-
+              {renderStepIndicator(3)}
               <div className="flex items-center justify-between">
-                <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">Confirm Withdrawal</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Confirm Withdrawal</p>
                 <button onClick={() => setStep(2)} className="flex items-center gap-1 text-[10px] text-primary font-semibold hover:underline">
                   <ChevronLeft className="h-3 w-3" /> Back
                 </button>
               </div>
-
-              {/* Amount summary */}
               <Card className="overflow-hidden glow-border">
                 <CardContent className="relative p-0">
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-transparent to-success/[0.02]" />
                   <div className="relative p-5 flex items-center justify-between">
                     <div>
-                      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/30">Withdrawal Amount</p>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Withdrawal Amount</p>
                       <p className="text-3xl font-black text-gradient-gold mt-1">${Number(amount).toLocaleString()}</p>
-                      <p className="text-[11px] text-muted-foreground/40 mt-1.5 font-medium">via {selectedNetwork.symbol}</p>
+                      <p className="text-[11px] text-muted-foreground mt-1.5 font-medium">via {selectedNetwork.symbol}</p>
                     </div>
                     <div className="h-16 w-16 rounded-2xl flex items-center justify-center" style={{ background: `${selectedNetwork.color}12`, border: `1px solid ${selectedNetwork.color}25` }}>
                       {selectedNetwork.logoSvg}
@@ -336,8 +247,6 @@ const Withdraw = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Details */}
               <div className="space-y-2">
                 {[
                   { label: "Network", value: selectedNetwork.id },
@@ -346,19 +255,17 @@ const Withdraw = () => {
                   { label: "Fee", value: "Free" },
                 ].map(row => (
                   <div key={row.label} className="flex items-center justify-between rounded-xl bg-card/15 border border-border/10 px-4 py-3">
-                    <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">{row.label}</span>
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{row.label}</span>
                     <span className="text-xs font-bold">{row.value}</span>
                   </div>
                 ))}
               </div>
-
               <div className="flex items-start gap-2.5 rounded-xl border border-destructive/10 bg-destructive/[0.03] p-3.5">
                 <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                <p className="text-[10px] text-muted-foreground/50 leading-relaxed">
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
                   Ensure the wallet address is correct. Funds sent to the wrong address cannot be recovered.
                 </p>
               </div>
-
               <Button className="w-full h-12 font-bold rounded-xl shadow-lg shadow-primary/15" onClick={handleSubmit} disabled={loading}>
                 {loading ? "Processing..." : "Confirm & Withdraw"}
               </Button>
@@ -366,7 +273,6 @@ const Withdraw = () => {
           )}
         </AnimatePresence>
 
-        {/* Security badges */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-3 rounded-2xl border border-border/15 bg-card/15 p-3.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/[0.08]">
@@ -374,7 +280,7 @@ const Withdraw = () => {
             </div>
             <div>
               <p className="text-[10px] font-bold">Secure</p>
-              <p className="text-[9px] text-muted-foreground/40">256-bit encrypted</p>
+              <p className="text-[9px] text-muted-foreground">256-bit encrypted</p>
             </div>
           </div>
           <div className="flex items-center gap-3 rounded-2xl border border-border/15 bg-card/15 p-3.5">
@@ -383,7 +289,7 @@ const Withdraw = () => {
             </div>
             <div>
               <p className="text-[10px] font-bold">Fast</p>
-              <p className="text-[9px] text-muted-foreground/40">Within 24 hours</p>
+              <p className="text-[9px] text-muted-foreground">Within 24 hours</p>
             </div>
           </div>
         </motion.div>

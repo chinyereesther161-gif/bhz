@@ -25,7 +25,6 @@ const Dashboard = () => {
       .then(({ data }) => setInvestments(data || []));
   }, [user]);
 
-  // Generate live AI trade feed based on real market data
   const generateTrade = useCallback(() => {
     if (marketData.length === 0) return null;
     const coin = marketData[Math.floor(Math.random() * marketData.length)];
@@ -58,8 +57,8 @@ const Dashboard = () => {
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
   const balance = profile?.balance ?? 0;
 
-  const tradeColor = (t: string) => t === "profit" ? "text-success" : t === "signal" ? "text-primary" : "text-muted-foreground/50";
-  const tradeDot = (t: string) => t === "profit" ? "bg-success" : t === "signal" ? "bg-primary" : "bg-muted-foreground/30";
+  const tradeColor = (t: string) => t === "profit" ? "text-success" : t === "signal" ? "text-primary" : "text-muted-foreground";
+  const tradeDot = (t: string) => t === "profit" ? "bg-success" : t === "signal" ? "bg-primary" : "bg-muted-foreground/50";
 
   return (
     <AppLayout>
@@ -70,7 +69,7 @@ const Dashboard = () => {
             Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"},
           </p>
           <h1 className="text-xl font-black">{profile?.name || "Trader"}</h1>
-          <p className="text-[10px] text-muted-foreground/30 font-mono tracking-wide">{profile?.capvest_id}</p>
+          <p className="text-[10px] text-muted-foreground font-mono tracking-wide">{profile?.capvest_id}</p>
         </motion.div>
 
         {/* Portfolio Card */}
@@ -80,7 +79,7 @@ const Dashboard = () => {
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-success/[0.02]" />
               <div className="relative p-6">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Total Balance</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Total Balance</p>
                   <div className="flex items-center gap-1.5 rounded-full bg-success/10 border border-success/20 px-2.5 py-1">
                     <span className="relative flex h-1.5 w-1.5">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
@@ -97,7 +96,7 @@ const Dashboard = () => {
                     {(profile?.weekly_pnl ?? 0) >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
                     {(profile?.weekly_pnl ?? 0) >= 0 ? "+" : ""}${Math.abs(profile?.weekly_pnl ?? 0).toFixed(2)}
                   </span>
-                  <span className="text-[10px] text-muted-foreground/30">this week</span>
+                  <span className="text-[10px] text-muted-foreground">this week</span>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-px bg-border/15">
@@ -107,7 +106,7 @@ const Dashboard = () => {
                   { label: "Payout", value: "Monday", color: "text-primary" },
                 ].map(item => (
                   <div key={item.label} className="bg-card/50 p-3 text-center">
-                    <p className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground/35">{item.label}</p>
+                    <p className="text-[8px] font-semibold uppercase tracking-wider text-muted-foreground">{item.label}</p>
                     <p className={`text-xs font-bold mt-0.5 ${item.color}`}>{item.value}</p>
                   </div>
                 ))}
@@ -126,14 +125,14 @@ const Dashboard = () => {
                     <Package className="h-3.5 w-3.5 text-primary/70" />
                     Active Investments
                   </h3>
-                  <span className="text-[10px] text-muted-foreground/30">{investments.length} plan{investments.length > 1 ? "s" : ""}</span>
+                  <span className="text-[10px] text-muted-foreground">{investments.length} plan{investments.length > 1 ? "s" : ""}</span>
                 </div>
                 <div className="divide-y divide-border/8">
                   {investments.map(inv => (
                     <div key={inv.id} className="flex items-center justify-between px-5 py-3">
                       <div>
                         <p className="text-xs font-bold">{inv.plan_name}</p>
-                        <p className="text-[10px] text-muted-foreground/30">{new Date(inv.created_at).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-muted-foreground">{new Date(inv.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-black text-primary">${inv.amount.toLocaleString()}</p>
@@ -187,7 +186,7 @@ const Dashboard = () => {
                         {coin.image && <img src={coin.image} alt={coin.name} className="h-6 w-6 rounded-full" />}
                         <div className="flex-1 min-w-0">
                           <span className="text-xs font-bold uppercase">{coin.symbol}</span>
-                          <span className="text-[10px] text-muted-foreground/30 ml-1.5">{coin.name}</span>
+                          <span className="text-[10px] text-muted-foreground ml-1.5">{coin.name}</span>
                         </div>
                         <div className="text-right shrink-0">
                           <p className="text-xs font-bold font-mono">${formatPrice(coin.current_price)}</p>
@@ -223,7 +222,7 @@ const Dashboard = () => {
               </div>
               <div className="max-h-52 overflow-y-auto divide-y divide-border/5">
                 {trades.length === 0 ? (
-                  <div className="p-5 text-center text-xs text-muted-foreground/30">Loading trades...</div>
+                  <div className="p-5 text-center text-xs text-muted-foreground">Loading trades...</div>
                 ) : trades.map((t, i) => (
                   <motion.div
                     key={`${t.time}-${i}`}
@@ -233,7 +232,7 @@ const Dashboard = () => {
                   >
                     <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${tradeDot(t.type)}`} />
                     <span className={`text-[10px] flex-1 ${tradeColor(t.type)}`}>{t.msg}</span>
-                    <span className="text-[9px] text-muted-foreground/20 font-mono shrink-0">{t.time}</span>
+                    <span className="text-[9px] text-muted-foreground font-mono shrink-0">{t.time}</span>
                   </motion.div>
                 ))}
               </div>
@@ -251,14 +250,14 @@ const Dashboard = () => {
               <Brain className="h-4 w-4 text-primary" />
             </div>
             <p className="text-xs font-bold">Live Trading</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-0.5">AI activity feed</p>
+            <p className="text-[9px] text-muted-foreground mt-0.5">AI activity feed</p>
           </Link>
           <Link to="/packages" className="group rounded-2xl border border-border/15 bg-card/10 p-4 transition-all hover:border-primary/15 hover:bg-card/30">
             <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/[0.08] group-hover:bg-primary/[0.15] transition-colors">
               <Package className="h-4 w-4 text-primary" />
             </div>
             <p className="text-xs font-bold">Investment Plans</p>
-            <p className="text-[9px] text-muted-foreground/40 mt-0.5">View & activate</p>
+            <p className="text-[9px] text-muted-foreground mt-0.5">View & activate</p>
           </Link>
         </motion.div>
 
@@ -276,7 +275,7 @@ const Dashboard = () => {
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success" />
                 </span>
               </div>
-              <p className="text-[9px] text-muted-foreground/35 mt-0.5">Monitoring 500+ markets • Trading 24/7</p>
+              <p className="text-[9px] text-muted-foreground mt-0.5">Monitoring 500+ markets • Trading 24/7</p>
             </div>
           </div>
         </motion.div>
