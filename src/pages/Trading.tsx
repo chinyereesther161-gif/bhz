@@ -74,7 +74,7 @@ const Trading = () => {
             <h1 className="text-xl font-black flex items-center gap-2">
               AI Trading Terminal
             </h1>
-            <p className="text-[10px] text-muted-foreground/40 mt-0.5">Real-time market intelligence and automated execution</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Real-time market intelligence and automated execution</p>
           </div>
           <Badge className="bg-success/10 text-success border border-success/15 gap-1.5 font-bold text-[10px] px-3 py-1">
             <span className="relative flex h-1.5 w-1.5">
@@ -97,7 +97,7 @@ const Trading = () => {
               <CardContent className="p-3.5">
                 <div className="flex items-center gap-2 mb-1.5">
                   <s.icon className={`h-3.5 w-3.5 ${s.color} opacity-60`} />
-                  <span className="text-[8px] text-muted-foreground/30 font-semibold uppercase tracking-wider">{s.label}</span>
+                  <span className="text-[8px] text-muted-foreground font-semibold uppercase tracking-wider">{s.label}</span>
                 </div>
                 <p className={`text-sm font-black ${s.color}`}>{s.value}</p>
               </CardContent>
@@ -118,7 +118,7 @@ const Trading = () => {
                       <Radio className="h-3 w-3 text-success" />
                       Live Markets
                     </h3>
-                    <span className="text-[8px] text-muted-foreground/25 font-mono">REAL-TIME</span>
+                    <span className="text-[8px] text-muted-foreground font-mono">REAL-TIME</span>
                   </div>
                   {loading ? (
                     <div className="p-4 space-y-2">
@@ -140,9 +140,9 @@ const Trading = () => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5">
                                 <span className="text-[11px] font-bold uppercase">{coin.symbol}</span>
-                                <span className="text-[8px] text-muted-foreground/25">/USDT</span>
+                                <span className="text-[8px] text-muted-foreground">/USDT</span>
                               </div>
-                              <span className="text-[9px] text-muted-foreground/30 truncate block">{coin.name}</span>
+                              <span className="text-[9px] text-muted-foreground truncate block">{coin.name}</span>
                             </div>
                             <div className="text-right">
                               <p className="text-[11px] font-bold font-mono">${formatPrice(coin.current_price)}</p>
@@ -162,7 +162,6 @@ const Trading = () => {
 
             {/* Gainers / Losers */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="grid grid-cols-2 gap-3">
-              {/* Top Gainers */}
               <Card className="bg-card/10 border-border/15 overflow-hidden">
                 <CardContent className="p-0">
                   <div className="px-4 py-2.5 border-b border-border/10 bg-success/[0.03]">
@@ -181,7 +180,6 @@ const Trading = () => {
                   </div>
                 </CardContent>
               </Card>
-              {/* Top Losers */}
               <Card className="bg-card/10 border-border/15 overflow-hidden">
                 <CardContent className="p-0">
                   <div className="px-4 py-2.5 border-b border-border/10 bg-destructive/[0.03]">
@@ -203,9 +201,8 @@ const Trading = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - AI Engine + Activity */}
+          {/* Right Column */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Asset Detail (when selected) */}
             <AnimatePresence>
               {selectedCoin && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
@@ -215,7 +212,7 @@ const Trading = () => {
                         {selectedCoin.image && <img src={selectedCoin.image} alt={selectedCoin.name} className="h-8 w-8 rounded-full" />}
                         <div>
                           <p className="text-sm font-black uppercase">{selectedCoin.symbol}/USDT</p>
-                          <p className="text-[9px] text-muted-foreground/40">{selectedCoin.name}</p>
+                          <p className="text-[9px] text-muted-foreground">{selectedCoin.name}</p>
                         </div>
                         <div className="ml-auto text-right">
                           <p className="text-sm font-black font-mono">${formatPrice(selectedCoin.current_price)}</p>
@@ -232,7 +229,7 @@ const Trading = () => {
                           { label: "24h Low", value: `$${formatPrice(selectedCoin.low_24h || 0)}` },
                         ].map(d => (
                           <div key={d.label} className="rounded-lg bg-secondary/15 border border-border/10 px-3 py-2">
-                            <p className="text-[8px] text-muted-foreground/30 font-semibold uppercase tracking-wider">{d.label}</p>
+                            <p className="text-[8px] text-muted-foreground font-semibold uppercase tracking-wider">{d.label}</p>
                             <p className="text-[11px] font-bold font-mono mt-0.5">{d.value}</p>
                           </div>
                         ))}
@@ -260,7 +257,7 @@ const Trading = () => {
                             ACTIVE
                           </Badge>
                         </div>
-                        <p className="text-[9px] text-muted-foreground/40 mt-0.5">Neural Network v4.2</p>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">Neural Network v4.2</p>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -272,7 +269,7 @@ const Trading = () => {
                       ].map(item => (
                         <div key={item.label} className="flex items-center gap-2.5 rounded-lg bg-secondary/10 border border-border/8 px-3 py-2">
                           <item.icon className="h-3 w-3 text-primary/50 shrink-0" />
-                          <span className="text-[9px] text-muted-foreground/40 flex-1">{item.label}</span>
+                          <span className="text-[9px] text-muted-foreground flex-1">{item.label}</span>
                           <span className="text-[9px] font-semibold text-foreground/70">{item.value}</span>
                         </div>
                       ))}
@@ -293,7 +290,7 @@ const Trading = () => {
                     </h3>
                     <div className="flex items-center gap-1">
                       <div className="h-1 w-1 rounded-full bg-success animate-pulse" />
-                      <span className="text-[8px] text-muted-foreground/25 font-mono">STREAMING</span>
+                      <span className="text-[8px] text-muted-foreground font-mono">STREAMING</span>
                     </div>
                   </div>
                   <div className="max-h-[340px] overflow-y-auto divide-y divide-border/6">
@@ -312,7 +309,7 @@ const Trading = () => {
                               <Badge variant="outline" className={`${config.color} border-current/20 text-[7px] py-0 px-1 font-bold`}>
                                 {config.label}
                               </Badge>
-                              <span className="text-[8px] text-muted-foreground/20 font-mono">{a.time}</span>
+                              <span className="text-[8px] text-muted-foreground font-mono">{a.time}</span>
                             </div>
                             <p className={`text-[10px] leading-relaxed ${config.color}`}>{a.msg}</p>
                           </div>

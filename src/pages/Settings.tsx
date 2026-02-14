@@ -40,8 +40,6 @@ const Settings = () => {
   const [showRecoveryReset, setShowRecoveryReset] = useState(false);
   const [recoveryToken, setRecoveryToken] = useState("");
   const [resetNewPassword, setResetNewPassword] = useState("");
-
-  // Withdrawal wallets (stored in localStorage since no DB table)
   const [withdrawalWallets, setWithdrawalWallets] = useState<WithdrawalWallet[]>([]);
   const [newWalletNetwork, setNewWalletNetwork] = useState(NETWORKS[0]);
   const [newWalletAddress, setNewWalletAddress] = useState("");
@@ -52,7 +50,6 @@ const Settings = () => {
     supabase.from("investments").select("*").eq("user_id", user.id).eq("status", "active")
       .order("created_at", { ascending: false })
       .then(({ data }) => setInvestments(data || []));
-
     const saved = localStorage.getItem(`withdrawal_wallets_${user.id}`);
     if (saved) setWithdrawalWallets(JSON.parse(saved));
   }, [user]);
@@ -60,134 +57,58 @@ const Settings = () => {
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
 
   const handleChangePassword = async () => {
-    if (!oldPassword) {
-      toast({ title: "Error", description: "Please enter your current password", variant: "destructive" });
-      return;
-    }
-    if (newPassword.length < 6) {
-      toast({ title: "Error", description: "New password must be at least 6 characters", variant: "destructive" });
-      return;
-    }
-
+    if (!oldPassword) { toast({ title: "Error", description: "Please enter your current password", variant: "destructive" }); return; }
+    if (newPassword.length < 6) { toast({ title: "Error", description: "New password must be at least 6 characters", variant: "destructive" }); return; }
     setLoading(true);
-    // Verify old password by signing in
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: profile?.email || "",
-      password: oldPassword,
-    });
-    if (signInError) {
-      setLoading(false);
-      toast({ title: "Error", description: "Current password is incorrect", variant: "destructive" });
-      return;
-    }
-
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email: profile?.email || "", password: oldPassword });
+    if (signInError) { setLoading(false); toast({ title: "Error", description: "Current password is incorrect", variant: "destructive" }); return; }
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     setLoading(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Password updated successfully" });
-      setOldPassword("");
-      setNewPassword("");
-    }
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Password updated successfully" }); setOldPassword(""); setNewPassword(""); }
   };
 
   const handleRecoveryReset = async () => {
-    if (!recoveryToken || !resetNewPassword) {
-      toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
-      return;
-    }
-    if (resetNewPassword.length < 6) {
-      toast({ title: "Error", description: "New password must be at least 6 characters", variant: "destructive" });
-      return;
-    }
-
+    if (!recoveryToken || !resetNewPassword) { toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" }); return; }
+    if (resetNewPassword.length < 6) { toast({ title: "Error", description: "New password must be at least 6 characters", variant: "destructive" }); return; }
     setLoading(true);
-    // Verify recovery token
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("recovery_token")
-      .eq("user_id", user?.id || "")
-      .single();
-
-    if (!profileData || profileData.recovery_token !== recoveryToken) {
-      setLoading(false);
-      toast({ title: "Error", description: "Invalid recovery token", variant: "destructive" });
-      return;
-    }
-
+    const { data: profileData } = await supabase.from("profiles").select("recovery_token").eq("user_id", user?.id || "").single();
+    if (!profileData || profileData.recovery_token !== recoveryToken) { setLoading(false); toast({ title: "Error", description: "Invalid recovery token", variant: "destructive" }); return; }
     const { error } = await supabase.auth.updateUser({ password: resetNewPassword });
     setLoading(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Password reset successfully" });
-      setRecoveryToken("");
-      setResetNewPassword("");
-      setShowRecoveryReset(false);
-    }
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); }
+    else { toast({ title: "Password reset successfully" }); setRecoveryToken(""); setResetNewPassword(""); setShowRecoveryReset(false); }
   };
 
   const handleDeleteAccount = async () => {
-    if (deleteConfirm !== "DELETE") {
-      toast({ title: "Error", description: "Please type DELETE to confirm", variant: "destructive" });
-      return;
-    }
+    if (deleteConfirm !== "DELETE") { toast({ title: "Error", description: "Please type DELETE to confirm", variant: "destructive" }); return; }
     setDeleting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await supabase.functions.invoke("delete-account", {
-        headers: { Authorization: `Bearer ${session?.access_token}` },
-      });
+      const res = await supabase.functions.invoke("delete-account", { headers: { Authorization: `Bearer ${session?.access_token}` } });
       if (res.error) throw res.error;
       await signOut();
       navigate("/");
       toast({ title: "Account deleted", description: "Your account has been permanently deleted." });
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to delete account", variant: "destructive" });
-    }
+    } catch (err: any) { toast({ title: "Error", description: err.message || "Failed to delete account", variant: "destructive" }); }
     setDeleting(false);
   };
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate("/");
-  };
+  const handleLogout = async () => { await signOut(); navigate("/"); };
 
-  const copyId = () => {
-    navigator.clipboard.writeText(profile?.capvest_id || "");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const copyToken = () => {
-    navigator.clipboard.writeText((profile as any)?.recovery_token || "");
-    setCopiedToken(true);
-    setTimeout(() => setCopiedToken(false), 2000);
-  };
+  const copyId = () => { navigator.clipboard.writeText(profile?.capvest_id || ""); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copyToken = () => { navigator.clipboard.writeText((profile as any)?.recovery_token || ""); setCopiedToken(true); setTimeout(() => setCopiedToken(false), 2000); };
 
   const referralLink = `${window.location.origin}/signup?ref=${(profile as any)?.referral_code || ""}`;
-  const copyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink);
-    setCopiedReferral(true);
-    setTimeout(() => setCopiedReferral(false), 2000);
-  };
+  const copyReferralLink = () => { navigator.clipboard.writeText(referralLink); setCopiedReferral(true); setTimeout(() => setCopiedReferral(false), 2000); };
 
   const addWithdrawalWallet = () => {
-    if (!newWalletAddress.trim()) {
-      toast({ title: "Error", description: "Please enter a wallet address", variant: "destructive" });
-      return;
-    }
-    const newWallet: WithdrawalWallet = {
-      id: crypto.randomUUID(),
-      network: newWalletNetwork,
-      address: newWalletAddress.trim(),
-    };
+    if (!newWalletAddress.trim()) { toast({ title: "Error", description: "Please enter a wallet address", variant: "destructive" }); return; }
+    const newWallet: WithdrawalWallet = { id: crypto.randomUUID(), network: newWalletNetwork, address: newWalletAddress.trim() };
     const updated = [...withdrawalWallets, newWallet];
     setWithdrawalWallets(updated);
     if (user) localStorage.setItem(`withdrawal_wallets_${user.id}`, JSON.stringify(updated));
-    setNewWalletAddress("");
-    setShowAddWallet(false);
+    setNewWalletAddress(""); setShowAddWallet(false);
     toast({ title: "Wallet added", description: `${newWalletNetwork} withdrawal address saved` });
   };
 
@@ -216,10 +137,10 @@ const Settings = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold truncate">{profile?.name || "User"}</p>
-                  <p className="text-xs text-muted-foreground/70 truncate">{profile?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <p className="text-[10px] font-mono text-muted-foreground/50 tracking-wide">{profile?.capvest_id}</p>
-                    <button onClick={copyId} className="text-muted-foreground/50 hover:text-primary transition-colors">
+                    <p className="text-[10px] font-mono text-muted-foreground tracking-wide">{profile?.capvest_id}</p>
+                    <button onClick={copyId} className="text-muted-foreground hover:text-primary transition-colors">
                       {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
                     </button>
                   </div>
@@ -237,7 +158,7 @@ const Settings = () => {
                 <Key className="h-4 w-4 text-primary" />
                 <h3 className="text-xs font-bold">Recovery Token</h3>
               </div>
-              <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+              <p className="text-[10px] text-muted-foreground leading-relaxed">
                 Save this token securely. You can use it to reset your password if you forget it.
               </p>
               <div className="flex items-center gap-2">
@@ -267,11 +188,11 @@ const Settings = () => {
                   <h3 className="text-xs font-bold">Referral Program</h3>
                   <span className="text-[9px] bg-primary/10 text-primary border border-primary/15 px-2 py-0.5 rounded-full font-bold">$5 Bonus</span>
                 </div>
-                <p className="text-[10px] text-muted-foreground/60 leading-relaxed mb-3">
+                <p className="text-[10px] text-muted-foreground leading-relaxed mb-3">
                   Invite friends and earn $5 for each friend who invests in a plan. Your friend gets a $10 welcome bonus too!
                 </p>
                 <div className="space-y-2">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60">Your Referral Code</Label>
+                  <Label className="text-[10px] font-bold text-muted-foreground">Your Referral Code</Label>
                   <div className="flex items-center gap-2">
                     <code className="rounded-xl bg-background/50 px-3 py-2.5 text-sm font-mono font-bold text-primary border border-border/10">
                       {(profile as any)?.referral_code || "Loading..."}
@@ -279,9 +200,9 @@ const Settings = () => {
                   </div>
                 </div>
                 <div className="space-y-2 mt-3">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60">Referral Link</Label>
+                  <Label className="text-[10px] font-bold text-muted-foreground">Referral Link</Label>
                   <div className="flex items-center gap-2">
-                    <code className="flex-1 rounded-xl bg-background/50 p-2.5 text-[10px] font-mono text-muted-foreground/70 border border-border/10 break-all select-all">
+                    <code className="flex-1 rounded-xl bg-background/50 p-2.5 text-[10px] font-mono text-muted-foreground border border-border/10 break-all select-all">
                       {referralLink}
                     </code>
                     <Button variant="outline" size="icon" onClick={copyReferralLink} className="shrink-0 h-10 w-10 rounded-xl border-border/15">
@@ -307,8 +228,8 @@ const Settings = () => {
               ].map(item => (
                 <div key={item.label} className="flex items-center justify-between px-6 py-4">
                   <div className="flex items-center gap-2.5">
-                    <item.icon className="h-3.5 w-3.5 text-muted-foreground/50" />
-                    <span className="text-xs text-muted-foreground/60 font-medium">{item.label}</span>
+                    <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground font-medium">{item.label}</span>
                   </div>
                   <span className={`text-xs font-bold ${item.color}`}>{item.value}</span>
                 </div>
@@ -323,13 +244,10 @@ const Settings = () => {
             <CardContent className="p-0">
               <div className="flex items-center justify-between px-6 py-4 border-b border-border/10">
                 <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-muted-foreground/60" />
+                  <Globe className="h-4 w-4 text-muted-foreground" />
                   <h3 className="text-xs font-bold">Withdrawal Wallets</h3>
                 </div>
-                <button
-                  onClick={() => setShowAddWallet(!showAddWallet)}
-                  className="flex items-center gap-1 text-[10px] text-primary font-semibold hover:underline"
-                >
+                <button onClick={() => setShowAddWallet(!showAddWallet)} className="flex items-center gap-1 text-[10px] text-primary font-semibold hover:underline">
                   <Plus className="h-3 w-3" /> Add
                 </button>
               </div>
@@ -338,34 +256,24 @@ const Settings = () => {
                 <div className="px-6 py-4 border-b border-border/10 space-y-3 bg-card/10">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-semibold">Network</Label>
-                    <select
-                      value={newWalletNetwork}
-                      onChange={e => setNewWalletNetwork(e.target.value)}
-                      className="w-full h-10 rounded-xl bg-secondary/20 border border-border/15 px-3 text-xs"
-                    >
+                    <select value={newWalletNetwork} onChange={e => setNewWalletNetwork(e.target.value)}
+                      className="w-full h-10 rounded-xl bg-secondary/20 border border-border/15 px-3 text-xs">
                       {NETWORKS.map(n => <option key={n} value={n}>{n}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-semibold">Wallet Address</Label>
-                    <Input
-                      value={newWalletAddress}
-                      onChange={e => setNewWalletAddress(e.target.value)}
-                      placeholder="Enter wallet address..."
-                      className="h-10 bg-secondary/20 border-border/15 rounded-xl text-xs"
-                    />
+                    <Input value={newWalletAddress} onChange={e => setNewWalletAddress(e.target.value)} placeholder="Enter wallet address..." className="h-10 bg-secondary/20 border-border/15 rounded-xl text-xs" />
                   </div>
-                  <Button onClick={addWithdrawalWallet} size="sm" className="w-full h-9 text-xs font-bold rounded-xl">
-                    Save Wallet
-                  </Button>
+                  <Button onClick={addWithdrawalWallet} size="sm" className="w-full h-9 text-xs font-bold rounded-xl">Save Wallet</Button>
                 </div>
               )}
 
               {withdrawalWallets.length === 0 && !showAddWallet ? (
                 <div className="px-6 py-6 text-center">
-                  <Wallet className="mx-auto h-6 w-6 text-muted-foreground/40 mb-2" />
-                  <p className="text-[11px] text-muted-foreground/60">No withdrawal wallets saved</p>
-                  <p className="text-[10px] text-muted-foreground/50 mt-0.5">Add a wallet to speed up withdrawals</p>
+                  <Wallet className="mx-auto h-6 w-6 text-muted-foreground mb-2" />
+                  <p className="text-[11px] text-muted-foreground">No withdrawal wallets saved</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Add a wallet to speed up withdrawals</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border/8">
@@ -373,7 +281,7 @@ const Settings = () => {
                     <div key={w.id} className="flex items-center justify-between px-6 py-3">
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-bold text-primary">{w.network}</p>
-                        <p className="text-[10px] font-mono text-muted-foreground/60 truncate">{w.address}</p>
+                        <p className="text-[10px] font-mono text-muted-foreground truncate">{w.address}</p>
                       </div>
                       <button onClick={() => removeWallet(w.id)} className="text-destructive/50 hover:text-destructive transition-colors p-1">
                         <Trash2 className="h-3.5 w-3.5" />
@@ -399,7 +307,7 @@ const Settings = () => {
                     <div key={inv.id} className="flex items-center justify-between px-6 py-3">
                       <div>
                         <p className="text-xs font-bold">{inv.plan_name}</p>
-                        <p className="text-[10px] text-muted-foreground/50">Since {new Date(inv.created_at).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-muted-foreground">Since {new Date(inv.created_at).toLocaleDateString()}</p>
                       </div>
                       <p className="text-sm font-black text-primary">${inv.amount.toLocaleString()}</p>
                     </div>
@@ -416,13 +324,10 @@ const Settings = () => {
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-muted-foreground/60" />
+                  <Lock className="h-4 w-4 text-muted-foreground" />
                   <h3 className="text-xs font-bold">Change Password</h3>
                 </div>
-                <button
-                  onClick={() => setShowRecoveryReset(!showRecoveryReset)}
-                  className="text-[10px] text-primary font-semibold hover:underline"
-                >
+                <button onClick={() => setShowRecoveryReset(!showRecoveryReset)} className="text-[10px] text-primary font-semibold hover:underline">
                   Forgot password?
                 </button>
               </div>
@@ -443,7 +348,7 @@ const Settings = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">
                     Enter your recovery token and a new password to reset your password.
                   </p>
                   <div className="space-y-2">
@@ -470,24 +375,20 @@ const Settings = () => {
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
           <div className="flex items-center gap-3 rounded-2xl border border-border/15 bg-card/10 p-4">
             <Shield className="h-4 w-4 text-primary/60 shrink-0" />
-            <p className="text-[10px] text-muted-foreground/60 leading-relaxed">Your account is protected with 256-bit encryption and secure authentication.</p>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">Your account is protected with 256-bit encryption and secure authentication.</p>
           </div>
         </motion.div>
 
         {/* Sign Out */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
           <Button variant="outline" className="w-full h-12 gap-2 text-destructive border-destructive/15 hover:bg-destructive/[0.06] rounded-xl" onClick={handleLogout}>
-            <LogOut className="h-4 w-4" />
-            Sign Out
+            <LogOut className="h-4 w-4" /> Sign Out
           </Button>
         </motion.div>
 
         {/* Delete Account */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-          <button
-            onClick={() => setShowDeleteDialog(true)}
-            className="w-full text-center text-[11px] text-destructive/60 hover:text-destructive transition-colors py-3 font-medium"
-          >
+          <button onClick={() => setShowDeleteDialog(true)} className="w-full text-center text-[11px] text-destructive/60 hover:text-destructive transition-colors py-3 font-medium">
             Delete Account Permanently
           </button>
         </motion.div>
@@ -498,32 +399,19 @@ const Settings = () => {
         <DialogContent className="bg-card border-border/40">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
-              Delete Account
+              <AlertTriangle className="h-5 w-5" /> Delete Account
             </DialogTitle>
-            <DialogDescription className="text-muted-foreground/70">
+            <DialogDescription className="text-muted-foreground">
               This action is <strong className="text-destructive">permanent and irreversible</strong>. All your data, investments, and balance will be permanently deleted.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <Label className="text-xs font-semibold">Type DELETE to confirm</Label>
-            <Input
-              value={deleteConfirm}
-              onChange={e => setDeleteConfirm(e.target.value)}
-              placeholder="Type DELETE"
-              className="h-11 bg-secondary/20 border-destructive/15 rounded-xl font-mono uppercase"
-            />
+            <Input value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)} placeholder="Type DELETE" className="h-11 bg-secondary/20 border-destructive/15 rounded-xl font-mono uppercase" />
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => { setShowDeleteDialog(false); setDeleteConfirm(""); }} className="border-border/40">
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteAccount}
-              disabled={deleting || deleteConfirm !== "DELETE"}
-              className="font-bold"
-            >
+            <Button variant="outline" onClick={() => { setShowDeleteDialog(false); setDeleteConfirm(""); }} className="border-border/40">Cancel</Button>
+            <Button variant="destructive" onClick={handleDeleteAccount} disabled={deleting || deleteConfirm !== "DELETE"} className="font-bold">
               {deleting ? "Deleting..." : "Delete My Account"}
             </Button>
           </DialogFooter>

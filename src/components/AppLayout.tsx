@@ -15,7 +15,7 @@ const navItems = [
 ];
 
 const SupportTrigger = ({ onClick }: { onClick?: () => void }) => (
-  <button onClick={onClick} className="rounded-xl p-2 transition-all text-muted-foreground/40 hover:text-foreground hover:bg-card/50">
+  <button onClick={onClick} className="rounded-xl p-2 transition-all text-muted-foreground hover:text-foreground hover:bg-card/50">
     <MessageCircle className="h-[17px] w-[17px]" />
   </button>
 );
@@ -62,14 +62,14 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </span>
           <div className="flex items-center gap-0.5">
-            <NavLink to="/history" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
+            <NavLink to="/history" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-card/50"}`}>
               <History className="h-[17px] w-[17px]" />
             </NavLink>
             <SupportTrigger onClick={() => setSupportOpen(true)} />
-            <NavLink to="/withdraw" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
+            <NavLink to="/withdraw" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-card/50"}`}>
               <ArrowUpFromLine className="h-[17px] w-[17px]" />
             </NavLink>
-            <NavLink to="/notifications" className={({ isActive }) => `relative rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
+            <NavLink to="/notifications" className={({ isActive }) => `relative rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-card/50"}`}>
               <Bell className="h-[17px] w-[17px]" />
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground px-1">
@@ -82,7 +82,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 <Shield className="h-[17px] w-[17px]" />
               </NavLink>
             )}
-            <NavLink to="/settings" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
+            <NavLink to="/settings" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-card/50"}`}>
               <Settings className="h-[17px] w-[17px]" />
             </NavLink>
           </div>
@@ -102,7 +102,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
                 key={item.to}
                 to={item.to}
                 className={`flex flex-col items-center gap-0.5 rounded-lg px-1.5 py-1 text-[8px] font-semibold transition-all min-w-0 ${
-                  active ? "text-primary" : "text-muted-foreground/35 hover:text-muted-foreground/60"
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <div className={`p-1 rounded-lg transition-all ${active ? "bg-primary/10" : ""}`}>

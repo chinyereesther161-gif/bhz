@@ -45,10 +45,10 @@ const Notifications = () => {
           <Card className="bg-card/15 border-border/15">
             <CardContent className="flex flex-col items-center gap-4 p-12 text-center">
               <div className="rounded-2xl bg-secondary/30 p-5">
-                <BellOff className="h-8 w-8 text-muted-foreground/20" />
+                <BellOff className="h-8 w-8 text-muted-foreground" />
               </div>
-              <p className="text-sm font-semibold text-muted-foreground/50">No notifications yet</p>
-              <p className="text-xs text-muted-foreground/30">You'll see important updates here</p>
+              <p className="text-sm font-semibold text-muted-foreground">No notifications yet</p>
+              <p className="text-xs text-muted-foreground">You'll see important updates here</p>
             </CardContent>
           </Card>
         ) : (
@@ -64,7 +64,7 @@ const Notifications = () => {
                   <CardContent className="p-5">
                     <div className="flex items-start gap-3">
                       <div className={`mt-0.5 rounded-xl p-2.5 shrink-0 ${!n.is_read ? "bg-primary/10 border border-primary/10" : "bg-secondary/30"}`}>
-                        <Bell className={`h-4 w-4 ${!n.is_read ? "text-primary" : "text-muted-foreground/30"}`} />
+                        <Bell className={`h-4 w-4 ${!n.is_read ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
@@ -74,8 +74,8 @@ const Notifications = () => {
                             {n.is_broadcast && <Badge variant="outline" className="text-[9px] py-0 border-border/15">All</Badge>}
                           </div>
                         </div>
-                        <p className="mt-1.5 text-xs text-muted-foreground/60 leading-relaxed">{n.message}</p>
-                        <p className="mt-2.5 text-[10px] text-muted-foreground/25">
+                        <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{n.message}</p>
+                        <p className="mt-2.5 text-[10px] text-muted-foreground">
                           {new Date(n.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>

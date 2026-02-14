@@ -3,16 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, ArrowRight, Shield, TrendingUp, Zap, BarChart3, Lock } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Shield, TrendingUp, Zap, BarChart3, Lock, Key } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetToken, setResetToken] = useState("");
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -26,6 +32,37 @@ const SignIn = () => {
     } else {
       navigate("/dashboard");
     }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetEmail || !resetToken || !resetPassword) {
+      toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+    if (resetPassword.length < 6) {
+      toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+    setResetLoading(true);
+    try {
+      const res = await supabase.functions.invoke("reset-password", {
+        body: { email: resetEmail, recovery_token: resetToken, new_password: resetPassword },
+      });
+      if (res.error) throw res.error;
+      const data = res.data as any;
+      if (data?.error) {
+        toast({ title: "Error", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "Password reset successful", description: "You can now sign in with your new password." });
+        setShowReset(false);
+        setResetEmail("");
+        setResetToken("");
+        setResetPassword("");
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to reset password", variant: "destructive" });
+    }
+    setResetLoading(false);
   };
 
   return (
@@ -45,7 +82,7 @@ const SignIn = () => {
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-2 w-16 rounded-full bg-primary/10 blur-md" />
           </div>
           <h2 className="text-3xl font-black mb-3 tracking-tight">Institutional Grade Trading</h2>
-          <p className="text-muted-foreground/50 leading-relaxed text-sm">
+          <p className="text-muted-foreground leading-relaxed text-sm">
             Access professional portfolio management tools and let our trading engine optimize your returns across multiple markets.
           </p>
 
@@ -59,12 +96,12 @@ const SignIn = () => {
               <div key={s.label} className="rounded-xl border border-border/10 bg-card/20 p-3.5 text-center">
                 <s.icon className="h-4 w-4 text-primary/40 mx-auto mb-2" />
                 <p className="text-lg font-black text-gradient-gold">{s.value}</p>
-                <p className="text-[9px] text-muted-foreground/30 font-semibold uppercase tracking-wider mt-1">{s.label}</p>
+                <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider mt-1">{s.label}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] text-muted-foreground/30">
+          <div className="mt-8 flex flex-wrap justify-center gap-6 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1.5"><Lock className="h-3 w-3" /> End-to-end encrypted</span>
             <span className="flex items-center gap-1.5"><Zap className="h-3 w-3" /> Instant execution</span>
           </div>
@@ -86,19 +123,28 @@ const SignIn = () => {
               </div>
             </Link>
             <h1 className="text-2xl font-black tracking-tight">Welcome Back</h1>
-            <p className="mt-2 text-sm text-muted-foreground/40">Sign in to your trading account</p>
+            <p className="mt-2 text-sm text-muted-foreground">Sign in to your trading account</p>
           </div>
 
           <form onSubmit={handleSignIn} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">Email Address</Label>
+              <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Email Address</Label>
               <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Password</Label>
+                <button
+                  type="button"
+                  onClick={() => { setResetEmail(email); setShowReset(true); }}
+                  className="text-[10px] text-primary font-semibold hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required className="h-12 bg-card/20 border-border/20 rounded-xl pr-11" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/30 hover:text-foreground transition-colors">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
@@ -111,23 +157,58 @@ const SignIn = () => {
           {/* Divider */}
           <div className="my-6 flex items-center gap-3">
             <div className="flex-1 h-px bg-border/15" />
-            <span className="text-[9px] text-muted-foreground/20 font-semibold uppercase tracking-widest">or</span>
+            <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest">or</span>
             <div className="flex-1 h-px bg-border/15" />
           </div>
 
-          <p className="text-center text-xs text-muted-foreground/35">
+          <p className="text-center text-xs text-muted-foreground">
             New to Capvest?{" "}
             <Link to="/signup" className="text-primary font-bold hover:underline">Create Account</Link>
           </p>
 
           {/* Mobile trust badges */}
-          <div className="mt-8 flex items-center justify-center gap-5 text-[9px] text-muted-foreground/25 lg:hidden">
+          <div className="mt-8 flex items-center justify-center gap-5 text-[9px] text-muted-foreground lg:hidden">
             <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secured</span>
             <span className="flex items-center gap-1"><TrendingUp className="h-3 w-3" /> 94.7% Win</span>
             <span className="flex items-center gap-1"><Zap className="h-3 w-3" /> Instant</span>
           </div>
         </motion.div>
       </div>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={showReset} onOpenChange={setShowReset}>
+        <DialogContent className="bg-card border-border/40 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5 text-primary" />
+              Reset Password
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Enter your email, recovery token (given at registration), and a new password.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Email Address</Label>
+              <Input value={resetEmail} onChange={e => setResetEmail(e.target.value)} placeholder="you@example.com" className="h-11 bg-secondary/20 border-border/15 rounded-xl text-sm" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Recovery Token</Label>
+              <Input value={resetToken} onChange={e => setResetToken(e.target.value)} placeholder="Paste your recovery token" className="h-11 bg-secondary/20 border-border/15 rounded-xl font-mono text-sm" />
+            </div>
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">New Password</Label>
+              <Input type="password" value={resetPassword} onChange={e => setResetPassword(e.target.value)} placeholder="Min 6 characters" className="h-11 bg-secondary/20 border-border/15 rounded-xl text-sm" />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowReset(false)} className="border-border/40">Cancel</Button>
+            <Button onClick={handleResetPassword} disabled={resetLoading} className="font-bold shadow-lg shadow-primary/20">
+              {resetLoading ? "Resetting..." : "Reset Password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

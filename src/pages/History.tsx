@@ -69,7 +69,7 @@ const History = () => {
               key={f}
               onClick={() => setFilter(f)}
               className={`shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all duration-300 ${
-                filter === f ? "bg-primary/[0.08] text-primary border border-primary/15" : "bg-card/10 text-muted-foreground/40 border border-border/10 hover:border-primary/10 hover:text-muted-foreground/60"
+                filter === f ? "bg-primary/[0.08] text-primary border border-primary/15" : "bg-card/10 text-muted-foreground border border-border/10 hover:border-primary/10 hover:text-foreground"
               }`}
             >
               {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1) + "s"}
@@ -85,9 +85,9 @@ const History = () => {
           <Card className="bg-card/15 border-border/15">
             <CardContent className="flex flex-col items-center gap-4 p-12 text-center">
               <div className="rounded-2xl bg-secondary/30 p-5">
-                <Clock className="h-8 w-8 text-muted-foreground/20" />
+                <Clock className="h-8 w-8 text-muted-foreground" />
               </div>
-              <p className="text-sm font-semibold text-muted-foreground/50">No transactions yet</p>
+              <p className="text-sm font-semibold text-muted-foreground">No transactions yet</p>
             </CardContent>
           </Card>
         ) : (
@@ -113,7 +113,7 @@ const History = () => {
                           </p>
                         </div>
                         <div className="flex items-center justify-between mt-1.5">
-                          <p className="text-[10px] text-muted-foreground/30">{t.detail} • {new Date(t.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</p>
+                          <p className="text-[10px] text-muted-foreground">{t.detail} • {new Date(t.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</p>
                           <Badge variant="outline" className={`text-[9px] py-0 ${statusColor(t.status)}`}>{t.status}</Badge>
                         </div>
                       </div>
