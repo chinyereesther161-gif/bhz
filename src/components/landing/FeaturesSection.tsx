@@ -36,9 +36,9 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section id="features" className="relative py-28 px-4 section-glow">
-    <div className="pointer-events-none absolute right-0 top-1/4 h-[600px] w-[600px] rounded-full bg-primary/[0.03] blur-[200px]" />
-    <div className="pointer-events-none absolute left-0 bottom-1/4 h-[400px] w-[400px] rounded-full bg-success/[0.02] blur-[150px]" />
+  <section id="features" className="relative py-28 px-4 section-glow overflow-hidden">
+    <div className="pointer-events-none absolute right-0 top-1/4 h-[400px] w-[400px] rounded-full bg-primary/[0.03] blur-[200px]" />
+    <div className="pointer-events-none absolute left-0 bottom-1/4 h-[300px] w-[300px] rounded-full bg-success/[0.02] blur-[150px]" />
 
     <div className="container relative mx-auto max-w-6xl">
       <motion.div

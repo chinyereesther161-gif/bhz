@@ -24,8 +24,8 @@ const benefits = [
 ];
 
 const PackagesPreview = () => (
-  <section id="plans" className="relative py-28 px-4 section-glow">
-    <div className="pointer-events-none absolute left-1/2 bottom-0 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-primary/[0.04] blur-[200px]" />
+  <section id="plans" className="relative py-28 px-4 section-glow overflow-hidden">
+    <div className="pointer-events-none absolute left-1/2 bottom-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-primary/[0.04] blur-[200px]" />
 
     <div className="container relative mx-auto max-w-4xl text-center">
       <motion.div

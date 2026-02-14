@@ -4,9 +4,9 @@ import { ArrowRight, Shield, Clock, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CTASection = () => (
-  <section className="relative py-28 px-4">
-    <div className="pointer-events-none absolute inset-0">
-      <div className="absolute left-1/2 top-1/2 h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.06] blur-[250px]" />
+  <section className="relative py-28 px-4 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.06] blur-[250px]" />
     </div>
 
     <motion.div

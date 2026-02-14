@@ -20,8 +20,8 @@ const without = [
 ];
 
 const ComparisonSection = () => (
-  <section className="relative py-28 px-4 section-glow">
-    <div className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.025] blur-[200px]" />
+  <section className="relative py-28 px-4 section-glow overflow-hidden">
+    <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/[0.025] blur-[200px]" />
 
     <div className="container relative mx-auto max-w-5xl">
       <motion.div

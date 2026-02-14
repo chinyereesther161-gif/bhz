@@ -10,10 +10,10 @@ const HeroSection = () => {
   return (
     <section className="relative overflow-hidden px-4 pb-20 pt-24 md:pt-32 lg:pt-40 md:pb-32">
       {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-[-300px] h-[800px] w-[1200px] -translate-x-1/2 rounded-full bg-primary/[0.08] blur-[200px]" />
-        <div className="absolute right-[-100px] top-[100px] h-[500px] w-[500px] rounded-full bg-primary/[0.04] blur-[180px]" />
-        <div className="absolute left-[-100px] bottom-[0px] h-[400px] w-[400px] rounded-full bg-success/[0.03] blur-[150px]" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-[-300px] h-[600px] w-[600px] max-w-[100vw] -translate-x-1/2 rounded-full bg-primary/[0.08] blur-[200px]" />
+        <div className="absolute right-0 top-[100px] h-[300px] w-[300px] rounded-full bg-primary/[0.04] blur-[180px]" />
+        <div className="absolute left-0 bottom-0 h-[300px] w-[300px] rounded-full bg-success/[0.03] blur-[150px]" />
       </div>
       <div className="pointer-events-none absolute inset-0 hero-grid opacity-30" />
 

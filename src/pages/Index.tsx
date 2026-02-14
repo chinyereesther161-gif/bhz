@@ -13,7 +13,7 @@ import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen bg-background overflow-x-hidden">
     <Navbar />
     <HeroSection />
     <MarketTicker />
