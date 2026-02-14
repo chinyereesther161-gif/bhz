@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,32 +10,56 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
-const networks = [
-  { id: "usdt-trc20", name: "USDT TRC20", address: "TJYk7aBcZn3xF9dR2vEqPmN8wL5sKh4Uy6", icon: "₮", color: "text-success", bg: "bg-success/10 border-success/20" },
-  { id: "btc", name: "Bitcoin", address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", icon: "₿", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
-  { id: "eth", name: "Ethereum", address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F", icon: "Ξ", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/20" },
-  { id: "sol", name: "Solana", address: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU", icon: "◎", color: "text-purple-400", bg: "bg-purple-400/10 border-purple-400/20" },
-];
+const networkMeta: Record<string, { icon: string; color: string; bg: string }> = {
+  "USDT TRC20": { icon: "₮", color: "text-success", bg: "bg-success/10 border-success/20" },
+  "Bitcoin": { icon: "₿", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  "Ethereum": { icon: "Ξ", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/20" },
+  "Solana": { icon: "◎", color: "text-purple-400", bg: "bg-purple-400/10 border-purple-400/20" },
+};
 
 const quickAmounts = [100, 250, 500, 1000, 2500, 5000];
+
+interface UserWallet {
+  network: string;
+  wallet_address: string;
+}
 
 const Deposit = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
+  const [wallets, setWallets] = useState<UserWallet[]>([]);
+  const [selectedWallet, setSelectedWallet] = useState<UserWallet | null>(null);
   const [amount, setAmount] = useState("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
+  useEffect(() => {
+    if (!user) return;
+    const fetchWallets = async () => {
+      const { data } = await supabase
+        .from("user_wallets")
+        .select("network, wallet_address")
+        .eq("user_id", user.id);
+      if (data && data.length > 0) {
+        setWallets(data);
+        setSelectedWallet(data[0]);
+      }
+    };
+    fetchWallets();
+  }, [user]);
+
+  const meta = selectedWallet ? (networkMeta[selectedWallet.network] || { icon: "•", color: "text-primary", bg: "bg-primary/10 border-primary/20" }) : null;
+
   const copyAddress = () => {
-    navigator.clipboard.writeText(selectedNetwork.address);
+    if (!selectedWallet) return;
+    navigator.clipboard.writeText(selectedWallet.wallet_address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSubmit = async () => {
-    if (!user || !amount || Number(amount) <= 0) {
+    if (!user || !amount || Number(amount) <= 0 || !selectedWallet) {
       toast({ title: "Error", description: "Please enter a valid amount", variant: "destructive" });
       return;
     }
@@ -43,8 +67,8 @@ const Deposit = () => {
     const { error } = await supabase.from("deposits").insert({
       user_id: user.id,
       amount: Number(amount),
-      network: selectedNetwork.name,
-      wallet_address: selectedNetwork.address,
+      network: selectedWallet.network,
+      wallet_address: selectedWallet.wallet_address,
     });
     setLoading(false);
     if (error) {
@@ -55,6 +79,17 @@ const Deposit = () => {
       setStep(1);
     }
   };
+
+  if (wallets.length === 0) {
+    return (
+      <AppLayout>
+        <div className="mx-auto max-w-lg flex flex-col items-center justify-center py-20 text-center space-y-3">
+          <Wallet className="h-10 w-10 text-muted-foreground/30" />
+          <p className="text-sm text-muted-foreground/60">No deposit wallets assigned yet. Please contact support.</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -124,30 +159,33 @@ const Deposit = () => {
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
             <Label className="text-xs font-bold">Choose Network</Label>
             <div className="grid grid-cols-2 gap-2.5">
-              {networks.map(n => (
-                <button
-                  key={n.id}
-                  onClick={() => { setSelectedNetwork(n); setStep(2); }}
-                  className={`group relative rounded-2xl border p-5 text-left transition-all duration-300 hover:scale-[1.02] ${
-                    selectedNetwork.id === n.id
-                      ? `${n.bg} shadow-lg`
-                      : "border-border/15 bg-card/15 hover:border-primary/15 hover:bg-card/30"
-                  }`}
-                >
-                  <span className={`block text-2xl font-black ${n.color}`}>{n.icon}</span>
-                  <span className="block text-xs font-bold mt-2">{n.name.split(' ')[0]}</span>
-                  <span className="block text-[9px] text-muted-foreground/40 mt-0.5">{n.name}</span>
-                  {selectedNetwork.id === n.id && (
-                    <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-success" />
-                  )}
-                </button>
-              ))}
+              {wallets.map(w => {
+                const m = networkMeta[w.network] || { icon: "•", color: "text-primary", bg: "bg-primary/10 border-primary/20" };
+                return (
+                  <button
+                    key={w.network}
+                    onClick={() => { setSelectedWallet(w); setStep(2); }}
+                    className={`group relative rounded-2xl border p-5 text-left transition-all duration-300 hover:scale-[1.02] ${
+                      selectedWallet?.network === w.network
+                        ? `${m.bg} shadow-lg`
+                        : "border-border/15 bg-card/15 hover:border-primary/15 hover:bg-card/30"
+                    }`}
+                  >
+                    <span className={`block text-2xl font-black ${m.color}`}>{m.icon}</span>
+                    <span className="block text-xs font-bold mt-2">{w.network.split(' ')[0]}</span>
+                    <span className="block text-[9px] text-muted-foreground/40 mt-0.5">{w.network}</span>
+                    {selectedWallet?.network === w.network && (
+                      <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-success" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </motion.div>
         )}
 
         {/* Step 2: Amount */}
-        {step === 2 && (
+        {step === 2 && selectedWallet && meta && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
             <div className="flex items-center justify-between">
               <Label htmlFor="amount" className="text-xs font-bold">Deposit Amount</Label>
@@ -190,12 +228,12 @@ const Deposit = () => {
             </Card>
 
             <div className="flex items-center gap-2 rounded-xl bg-card/20 border border-border/15 p-3">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${selectedNetwork.bg} ${selectedNetwork.color} text-sm font-black`}>
-                {selectedNetwork.icon}
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${meta.bg} ${meta.color} text-sm font-black`}>
+                {meta.icon}
               </div>
               <div className="flex-1">
                 <p className="text-[10px] text-muted-foreground/40">Sending via</p>
-                <p className="text-xs font-bold">{selectedNetwork.name}</p>
+                <p className="text-xs font-bold">{selectedWallet.network}</p>
               </div>
             </div>
 
@@ -206,7 +244,7 @@ const Deposit = () => {
         )}
 
         {/* Step 3: Send & Confirm */}
-        {step === 3 && (
+        {step === 3 && selectedWallet && meta && (
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-xs font-bold">Send & Confirm</Label>
@@ -215,7 +253,6 @@ const Deposit = () => {
               </button>
             </div>
 
-            {/* Summary */}
             <Card className="bg-primary/[0.04] border-primary/15 overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -223,23 +260,22 @@ const Deposit = () => {
                     <p className="text-[9px] text-muted-foreground/40 font-medium uppercase tracking-wider">You are depositing</p>
                     <p className="text-2xl font-black text-primary mt-0.5">${Number(amount).toLocaleString()}</p>
                   </div>
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${selectedNetwork.bg} ${selectedNetwork.color} text-xl font-black`}>
-                    {selectedNetwork.icon}
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${meta.bg} ${meta.color} text-xl font-black`}>
+                    {meta.icon}
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground/50 mt-2">via {selectedNetwork.name}</p>
+                <p className="text-[10px] text-muted-foreground/50 mt-2">via {selectedWallet.network}</p>
               </CardContent>
             </Card>
 
-            {/* Wallet Address */}
             <Card className="bg-card/20 border-border/15">
               <CardContent className="p-4">
                 <Label className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40">
-                  Send exactly ${Number(amount).toLocaleString()} in {selectedNetwork.name} to:
+                  Send exactly ${Number(amount).toLocaleString()} in {selectedWallet.network} to:
                 </Label>
                 <div className="mt-2.5 flex items-center gap-2">
                   <code className="flex-1 break-all rounded-xl bg-secondary/30 p-3 text-[10px] font-mono text-foreground/70 border border-border/15 leading-relaxed">
-                    {selectedNetwork.address}
+                    {selectedWallet.wallet_address}
                   </code>
                   <Button variant="outline" size="icon" onClick={copyAddress} className="shrink-0 h-10 w-10 rounded-xl border-border/20 hover:bg-primary/10 hover:border-primary/20 transition-all">
                     {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
@@ -249,15 +285,13 @@ const Deposit = () => {
               </CardContent>
             </Card>
 
-            {/* Warning */}
             <div className="flex items-start gap-2.5 rounded-xl border border-destructive/15 bg-destructive/[0.03] p-3">
               <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
               <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
-                Only send <span className="font-bold text-foreground/80">{selectedNetwork.name}</span> to this address. Sending other tokens will result in permanent loss.
+                Only send <span className="font-bold text-foreground/80">{selectedWallet.network}</span> to this address. Sending other tokens will result in permanent loss.
               </p>
             </div>
 
-            {/* Submit */}
             <Button className="w-full h-13 font-bold rounded-xl shadow-lg shadow-primary/15 hover:shadow-primary/25 transition-all text-sm" onClick={handleSubmit} disabled={loading}>
               {loading ? "Submitting..." : "I've Sent the Payment — Confirm Deposit"}
             </Button>
@@ -284,7 +318,7 @@ const Deposit = () => {
                   "Confirm and wait for verification (under 24h)",
                 ].map((s, i) => (
                   <div key={i} className="flex items-start gap-2 rounded-lg bg-background/30 border border-border/10 p-2.5">
-                    <span className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-[8px] font-black text-primary mt-0.5">{i + 1}</span>
+                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-primary/10 text-[8px] font-black text-primary mt-0.5">{i + 1}</span>
                     <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{s}</span>
                   </div>
                 ))}
