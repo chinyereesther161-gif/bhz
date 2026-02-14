@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { UserPlus, Wallet, BarChart3, TrendingUp, ArrowDown, DollarSign, Shield, CheckCircle2, Play } from "lucide-react";
-import promoVideo from "@/assets/promo-video.mp4";
+import { UserPlus, Wallet, BarChart3, TrendingUp, ArrowDown, DollarSign, Shield, CheckCircle2 } from "lucide-react";
 
 const steps = [
   {
@@ -82,35 +81,8 @@ const VisualGuideSection = () => (
           How to <span className="text-gradient-gold">Start Earning</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-muted-foreground leading-relaxed">
-          Watch how it works, then follow the simple steps below to start receiving weekly profits.
+          Follow these simple steps to start receiving weekly profits from our AI trading engine.
         </p>
-      </motion.div>
-
-      {/* Promo Video */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mb-16"
-      >
-        <div className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-primary/20 bg-card/30 shadow-2xl shadow-primary/10">
-          <div className="absolute top-0 left-0 right-0 h-10 bg-card/60 backdrop-blur-xl border-b border-border/20 flex items-center px-4 z-10">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-              <div className="h-2.5 w-2.5 rounded-full bg-primary/60" />
-              <div className="h-2.5 w-2.5 rounded-full bg-success/60" />
-            </div>
-            <span className="text-[10px] font-medium text-muted-foreground/50 ml-3">Capvest AI — How It Works</span>
-          </div>
-          <video
-            src={promoVideo}
-            controls
-            playsInline
-            preload="metadata"
-            className="w-full aspect-video pt-10"
-            poster=""
-          />
-        </div>
       </motion.div>
 
       <div className="space-y-6">
