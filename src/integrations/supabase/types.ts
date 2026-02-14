@@ -120,6 +120,10 @@ export type Database = {
           last_device: string | null
           last_ip: string | null
           name: string
+          phone: string | null
+          recovery_token: string | null
+          referral_code: string | null
+          referred_by: string | null
           updated_at: string
           user_id: string
           weekly_pnl: number
@@ -136,6 +140,10 @@ export type Database = {
           last_device?: string | null
           last_ip?: string | null
           name?: string
+          phone?: string | null
+          recovery_token?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           updated_at?: string
           user_id: string
           weekly_pnl?: number
@@ -152,6 +160,10 @@ export type Database = {
           last_device?: string | null
           last_ip?: string | null
           name?: string
+          phone?: string | null
+          recovery_token?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           updated_at?: string
           user_id?: string
           weekly_pnl?: number
