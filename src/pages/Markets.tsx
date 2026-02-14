@@ -8,7 +8,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 const Markets = () => {
-  const { data, loading } = useMarketData(10);
+  const { data, loading } = useMarketData(50);
   const [search, setSearch] = useState("");
 
   const filtered = data.filter(c =>
