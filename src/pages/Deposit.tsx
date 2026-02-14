@@ -4,18 +4,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, Check, Shield, AlertTriangle, Info } from "lucide-react";
+import { Copy, Check, AlertTriangle, Info, Wallet, ArrowRight, Shield, Clock, Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
 const networks = [
-  { id: "usdt-trc20", name: "USDT TRC20", address: "TJYk7aBcZn3xF9dR2vEqPmN8wL5sKh4Uy6", icon: "₮" },
-  { id: "btc", name: "Bitcoin", address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", icon: "₿" },
-  { id: "eth", name: "Ethereum", address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F", icon: "Ξ" },
-  { id: "sol", name: "Solana", address: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU", icon: "◎" },
+  { id: "usdt-trc20", name: "USDT TRC20", address: "TJYk7aBcZn3xF9dR2vEqPmN8wL5sKh4Uy6", icon: "₮", color: "text-success", bg: "bg-success/10 border-success/20" },
+  { id: "btc", name: "Bitcoin", address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh", icon: "₿", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  { id: "eth", name: "Ethereum", address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F", icon: "Ξ", color: "text-blue-400", bg: "bg-blue-400/10 border-blue-400/20" },
+  { id: "sol", name: "Solana", address: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU", icon: "◎", color: "text-purple-400", bg: "bg-purple-400/10 border-purple-400/20" },
 ];
+
+const quickAmounts = [100, 250, 500, 1000, 2500, 5000];
 
 const Deposit = () => {
   const { user } = useAuth();
@@ -24,6 +26,7 @@ const Deposit = () => {
   const [amount, setAmount] = useState("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
 
   const copyAddress = () => {
     navigator.clipboard.writeText(selectedNetwork.address);
@@ -49,98 +52,245 @@ const Deposit = () => {
     } else {
       toast({ title: "Deposit submitted", description: "Pending verification — usually within 24h." });
       setAmount("");
+      setStep(1);
     }
   };
 
   return (
     <AppLayout>
       <div className="mx-auto max-w-lg space-y-5">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-xl font-black">Deposit Funds</h1>
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-black flex items-center gap-2">
+              <Wallet className="h-5 w-5 text-primary" />
+              Fund Your Account
+            </h1>
+            <p className="text-[11px] text-muted-foreground/60 mt-0.5">Secure deposits via cryptocurrency</p>
+          </div>
         </motion.div>
 
-        {/* Network Selector */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-4 gap-2.5">
-          {networks.map(n => (
-            <button
-              key={n.id}
-              onClick={() => setSelectedNetwork(n)}
-              className={`rounded-2xl border p-4 text-center transition-all duration-300 ${
-                selectedNetwork.id === n.id
-                  ? "border-primary/30 bg-primary/[0.06] text-primary shadow-md shadow-primary/10"
-                  : "border-border/15 bg-card/15 text-muted-foreground/50 hover:border-primary/15 hover:bg-card/30"
-              }`}
-            >
-              <span className="block text-xl font-bold">{n.icon}</span>
-              <span className="block text-[9px] font-semibold mt-1.5 uppercase tracking-wider">{n.name.split(' ')[0]}</span>
-            </button>
+        {/* Trust Badges */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="grid grid-cols-3 gap-2">
+          {[
+            { icon: Shield, label: "Encrypted", sub: "256-bit SSL" },
+            { icon: Clock, label: "Fast", sub: "Under 24h" },
+            { icon: Zap, label: "Instant", sub: "On-chain confirm" },
+          ].map(b => (
+            <div key={b.label} className="flex flex-col items-center gap-1.5 rounded-xl bg-card/30 border border-border/20 p-3 text-center">
+              <b.icon className="h-4 w-4 text-primary/70" />
+              <div>
+                <p className="text-[10px] font-bold">{b.label}</p>
+                <p className="text-[8px] text-muted-foreground/40">{b.sub}</p>
+              </div>
+            </div>
           ))}
         </motion.div>
 
-        {/* Wallet Address */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="bg-card/20 border-border/15">
-            <CardContent className="p-5">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40">
-                Send {selectedNetwork.name} to:
-              </Label>
-              <div className="mt-3 flex items-center gap-2.5">
-                <code className="flex-1 break-all rounded-xl bg-secondary/30 p-3.5 text-[11px] font-mono text-foreground/70 border border-border/15">
-                  {selectedNetwork.address}
-                </code>
-                <Button variant="outline" size="icon" onClick={copyAddress} className="shrink-0 h-11 w-11 rounded-xl border-border/20 hover:bg-primary/10 hover:border-primary/20 transition-all">
-                  {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-                </Button>
+        {/* Progress Steps */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <div className="flex items-center gap-1">
+            {[
+              { num: 1, label: "Select Network" },
+              { num: 2, label: "Enter Amount" },
+              { num: 3, label: "Send & Submit" },
+            ].map((s, i) => (
+              <div key={s.num} className="flex items-center gap-1 flex-1">
+                <button
+                  onClick={() => setStep(s.num)}
+                  className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-bold transition-all w-full ${
+                    step === s.num
+                      ? "bg-primary/15 text-primary border border-primary/25"
+                      : step > s.num
+                      ? "bg-success/10 text-success border border-success/20"
+                      : "bg-card/20 text-muted-foreground/40 border border-border/15"
+                  }`}
+                >
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-black ${
+                    step > s.num ? "bg-success text-white" : step === s.num ? "bg-primary text-primary-foreground" : "bg-muted/30 text-muted-foreground/40"
+                  }`}>
+                    {step > s.num ? "✓" : s.num}
+                  </span>
+                  <span className="hidden sm:inline">{s.label}</span>
+                </button>
+                {i < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground/20 shrink-0" />}
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Amount */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-2">
-          <Label htmlFor="amount" className="text-xs font-semibold">Deposit Amount (USD)</Label>
-          <Input id="amount" type="number" placeholder="Enter amount" value={amount} onChange={e => setAmount(e.target.value)} min="1" className="h-12 bg-card/20 border-border/20 rounded-xl text-sm" />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-          <Button className="w-full h-13 font-bold rounded-xl shadow-lg shadow-primary/15 hover:shadow-primary/25 transition-all" onClick={handleSubmit} disabled={loading}>
-            {loading ? "Submitting..." : "Submit Deposit"}
-          </Button>
-        </motion.div>
-
-        {/* Instructions */}
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Card className="bg-card/10 border-border/15">
-            <CardContent className="p-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary/70" />
-                <h3 className="text-xs font-bold">How to Deposit</h3>
-              </div>
-              <ol className="space-y-2.5">
-                {[
-                  "Select your preferred network above",
-                  "Copy the wallet address",
-                  "Send the exact amount from your wallet",
-                  "Enter the amount and submit the form",
-                  "Wait for verification (usually within 24h)",
-                ].map((step, i) => (
-                  <li key={i} className="flex items-start gap-3 text-[11px] text-muted-foreground/60">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-primary/[0.08] text-[9px] font-bold text-primary mt-0.5 border border-primary/10">{i + 1}</span>
-                    {step}
-                  </li>
-                ))}
-              </ol>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-          <div className="flex items-start gap-3 rounded-xl border border-primary/15 bg-primary/[0.03] p-4">
-            <AlertTriangle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-            <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
-              Only send <span className="font-semibold text-muted-foreground/80">{selectedNetwork.name}</span> to this address. Sending any other cryptocurrency may result in permanent loss of funds.
-            </p>
+            ))}
           </div>
+        </motion.div>
+
+        {/* Step 1: Network Selection */}
+        {step === 1 && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <Label className="text-xs font-bold">Choose Network</Label>
+            <div className="grid grid-cols-2 gap-2.5">
+              {networks.map(n => (
+                <button
+                  key={n.id}
+                  onClick={() => { setSelectedNetwork(n); setStep(2); }}
+                  className={`group relative rounded-2xl border p-5 text-left transition-all duration-300 hover:scale-[1.02] ${
+                    selectedNetwork.id === n.id
+                      ? `${n.bg} shadow-lg`
+                      : "border-border/15 bg-card/15 hover:border-primary/15 hover:bg-card/30"
+                  }`}
+                >
+                  <span className={`block text-2xl font-black ${n.color}`}>{n.icon}</span>
+                  <span className="block text-xs font-bold mt-2">{n.name.split(' ')[0]}</span>
+                  <span className="block text-[9px] text-muted-foreground/40 mt-0.5">{n.name}</span>
+                  {selectedNetwork.id === n.id && (
+                    <div className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-success" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Step 2: Amount */}
+        {step === 2 && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="amount" className="text-xs font-bold">Deposit Amount</Label>
+              <button onClick={() => setStep(1)} className="text-[10px] text-primary font-semibold hover:underline">
+                ← Change Network
+              </button>
+            </div>
+
+            <Card className="bg-card/20 border-border/15 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="flex items-center border-b border-border/15">
+                  <span className="pl-4 text-lg font-black text-muted-foreground/30">$</span>
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={e => setAmount(e.target.value)}
+                    min="1"
+                    className="border-0 bg-transparent h-14 text-xl font-black focus-visible:ring-0 placeholder:text-muted-foreground/20"
+                  />
+                  <span className="pr-4 text-[10px] font-bold text-muted-foreground/30 uppercase">USD</span>
+                </div>
+                <div className="p-3 flex flex-wrap gap-1.5">
+                  {quickAmounts.map(qa => (
+                    <button
+                      key={qa}
+                      onClick={() => setAmount(String(qa))}
+                      className={`rounded-lg px-3 py-1.5 text-[10px] font-bold transition-all ${
+                        amount === String(qa)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary/30 text-muted-foreground/60 hover:bg-secondary/50"
+                      }`}
+                    >
+                      ${qa.toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="flex items-center gap-2 rounded-xl bg-card/20 border border-border/15 p-3">
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${selectedNetwork.bg} ${selectedNetwork.color} text-sm font-black`}>
+                {selectedNetwork.icon}
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-muted-foreground/40">Sending via</p>
+                <p className="text-xs font-bold">{selectedNetwork.name}</p>
+              </div>
+            </div>
+
+            <Button className="w-full h-12 font-bold rounded-xl" onClick={() => { if (amount && Number(amount) > 0) setStep(3); else toast({ title: "Enter amount", description: "Please enter a valid deposit amount", variant: "destructive" }); }}>
+              Continue <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Step 3: Send & Confirm */}
+        {step === 3 && (
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold">Send & Confirm</Label>
+              <button onClick={() => setStep(2)} className="text-[10px] text-primary font-semibold hover:underline">
+                ← Change Amount
+              </button>
+            </div>
+
+            {/* Summary */}
+            <Card className="bg-primary/[0.04] border-primary/15 overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[9px] text-muted-foreground/40 font-medium uppercase tracking-wider">You are depositing</p>
+                    <p className="text-2xl font-black text-primary mt-0.5">${Number(amount).toLocaleString()}</p>
+                  </div>
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${selectedNetwork.bg} ${selectedNetwork.color} text-xl font-black`}>
+                    {selectedNetwork.icon}
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground/50 mt-2">via {selectedNetwork.name}</p>
+              </CardContent>
+            </Card>
+
+            {/* Wallet Address */}
+            <Card className="bg-card/20 border-border/15">
+              <CardContent className="p-4">
+                <Label className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground/40">
+                  Send exactly ${Number(amount).toLocaleString()} in {selectedNetwork.name} to:
+                </Label>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <code className="flex-1 break-all rounded-xl bg-secondary/30 p-3 text-[10px] font-mono text-foreground/70 border border-border/15 leading-relaxed">
+                    {selectedNetwork.address}
+                  </code>
+                  <Button variant="outline" size="icon" onClick={copyAddress} className="shrink-0 h-10 w-10 rounded-xl border-border/20 hover:bg-primary/10 hover:border-primary/20 transition-all">
+                    {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
+                {copied && <p className="text-[9px] text-success font-semibold mt-2">Address copied to clipboard</p>}
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <div className="flex items-start gap-2.5 rounded-xl border border-destructive/15 bg-destructive/[0.03] p-3">
+              <AlertTriangle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+              <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
+                Only send <span className="font-bold text-foreground/80">{selectedNetwork.name}</span> to this address. Sending other tokens will result in permanent loss.
+              </p>
+            </div>
+
+            {/* Submit */}
+            <Button className="w-full h-13 font-bold rounded-xl shadow-lg shadow-primary/15 hover:shadow-primary/25 transition-all text-sm" onClick={handleSubmit} disabled={loading}>
+              {loading ? "Submitting..." : "I've Sent the Payment — Confirm Deposit"}
+            </Button>
+
+            <p className="text-center text-[9px] text-muted-foreground/30">
+              Your deposit will be verified and credited within 24 hours
+            </p>
+          </motion.div>
+        )}
+
+        {/* How It Works */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <Card className="bg-card/10 border-border/15">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Info className="h-3.5 w-3.5 text-primary/70" />
+                <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50">How Deposits Work</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  "Select your preferred cryptocurrency network",
+                  "Enter the amount you wish to deposit",
+                  "Copy the wallet address and send crypto",
+                  "Confirm and wait for verification (under 24h)",
+                ].map((s, i) => (
+                  <div key={i} className="flex items-start gap-2 rounded-lg bg-background/30 border border-border/10 p-2.5">
+                    <span className="flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-[8px] font-black text-primary mt-0.5">{i + 1}</span>
+                    <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{s}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </AppLayout>
