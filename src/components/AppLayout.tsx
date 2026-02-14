@@ -10,6 +10,7 @@ const navItems = [
   { to: "/trading", icon: BarChart3, label: "Trading" },
   { to: "/packages", icon: Package, label: "Invest" },
   { to: "/deposit", icon: ArrowDownToLine, label: "Deposit" },
+  { to: "/withdraw", icon: ArrowUpFromLine, label: "Withdraw" },
 ];
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
