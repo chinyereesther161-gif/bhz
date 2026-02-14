@@ -6,19 +6,21 @@ import FeaturesSection from "@/components/landing/FeaturesSection";
 import ComparisonSection from "@/components/landing/ComparisonSection";
 import PackagesPreview from "@/components/landing/PackagesPreview";
 import FAQSection from "@/components/landing/FAQSection";
+import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <MarketTicker />
       <HeroSection />
+      <MarketTicker />
       <StatsGrid />
       <FeaturesSection />
       <ComparisonSection />
       <PackagesPreview />
       <FAQSection />
+      <CTASection />
       <Footer />
     </div>
   );
