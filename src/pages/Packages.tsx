@@ -11,16 +11,16 @@ import { TrendingUp, Shield, Zap, Check, Sparkles, DollarSign } from "lucide-rea
 import { motion } from "framer-motion";
 
 const packages = [
-  { name: "Micro", amount: 50, weeklyMin: 18, weeklyMax: 25 },
-  { name: "Starter", amount: 100, weeklyMin: 20, weeklyMax: 30 },
-  { name: "Basic", amount: 200, weeklyMin: 22, weeklyMax: 32 },
-  { name: "Standard", amount: 500, weeklyMin: 25, weeklyMax: 35 },
-  { name: "Professional", amount: 1000, weeklyMin: 28, weeklyMax: 40 },
-  { name: "Gold", amount: 2500, weeklyMin: 30, weeklyMax: 42 },
-  { name: "Platinum", amount: 5000, weeklyMin: 32, weeklyMax: 45 },
-  { name: "Diamond", amount: 10000, weeklyMin: 35, weeklyMax: 48 },
-  { name: "Elite", amount: 25000, weeklyMin: 38, weeklyMax: 52 },
-  { name: "Institutional", amount: 50000, weeklyMin: 40, weeklyMax: 55 },
+  { name: "Micro", amount: 50, weeklyMin: 35, weeklyMax: 50 },
+  { name: "Starter", amount: 100, weeklyMin: 38, weeklyMax: 55 },
+  { name: "Basic", amount: 200, weeklyMin: 40, weeklyMax: 58 },
+  { name: "Standard", amount: 500, weeklyMin: 42, weeklyMax: 62 },
+  { name: "Professional", amount: 1000, weeklyMin: 45, weeklyMax: 65 },
+  { name: "Gold", amount: 2500, weeklyMin: 48, weeklyMax: 70 },
+  { name: "Platinum", amount: 5000, weeklyMin: 52, weeklyMax: 75 },
+  { name: "Diamond", amount: 10000, weeklyMin: 55, weeklyMax: 80 },
+  { name: "Elite", amount: 25000, weeklyMin: 60, weeklyMax: 85 },
+  { name: "Institutional", amount: 50000, weeklyMin: 65, weeklyMax: 95 },
 ];
 
 
