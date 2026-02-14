@@ -1,9 +1,8 @@
 import { motion } from "framer-motion";
-import { UserPlus, Wallet, BarChart3, TrendingUp, ArrowDown } from "lucide-react";
+import { UserPlus, Wallet, BarChart3, ArrowDown } from "lucide-react";
 import screenshotSignup from "@/assets/screenshot-signup.jpg";
 import screenshotDeposit from "@/assets/screenshot-deposit.jpg";
 import screenshotInvest from "@/assets/screenshot-invest.jpg";
-import screenshotDashboard from "@/assets/screenshot-dashboard.jpg";
 
 const steps = [
   {
@@ -44,19 +43,6 @@ const steps = [
       "Our trading engine starts working for you immediately",
     ],
     screenshot: screenshotInvest,
-  },
-  {
-    step: 4,
-    icon: TrendingUp,
-    title: "Earn Weekly Profits",
-    subtitle: "Automated payouts every Monday",
-    details: [
-      "Smart trading across 500+ markets 24/7 on your behalf",
-      "Track performance on your live dashboard",
-      "Profits deposited to your balance each week",
-      "Withdraw anytime with no lock-up period",
-    ],
-    screenshot: screenshotDashboard,
   },
 ];
 
