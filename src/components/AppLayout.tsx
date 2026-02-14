@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { BarChart3, Package, LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Settings, Bell, Shield, History, Globe } from "lucide-react";
+import { BarChart3, Package, LayoutDashboard, ArrowDownToLine, ArrowUpFromLine, Settings, Bell, Shield, History, Globe, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import SupportDialog from "@/components/SupportDialog";
@@ -14,10 +14,17 @@ const navItems = [
   { to: "/withdraw", icon: ArrowUpFromLine, label: "Withdraw" },
 ];
 
+const SupportTrigger = ({ onClick }: { onClick?: () => void }) => (
+  <button onClick={onClick} className="rounded-xl p-2 transition-all text-muted-foreground/40 hover:text-foreground hover:bg-card/50">
+    <MessageCircle className="h-[17px] w-[17px]" />
+  </button>
+);
+
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, user } = useAuth();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -58,6 +65,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
             <NavLink to="/history" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
               <History className="h-[17px] w-[17px]" />
             </NavLink>
+            <SupportTrigger onClick={() => setSupportOpen(true)} />
             <NavLink to="/withdraw" className={({ isActive }) => `rounded-xl p-2 transition-all ${isActive ? "text-primary bg-primary/10" : "text-muted-foreground/40 hover:text-foreground hover:bg-card/50"}`}>
               <ArrowUpFromLine className="h-[17px] w-[17px]" />
             </NavLink>
@@ -82,7 +90,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       <main className="flex-1 px-4 py-5 pb-24">{children}</main>
-      <SupportDialog />
+      <SupportDialog open={supportOpen} onOpenChange={setSupportOpen} />
 
       {/* Bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/20 bg-background/92 backdrop-blur-2xl safe-area-bottom">
