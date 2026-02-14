@@ -146,7 +146,7 @@ const Deposit = () => {
 
   return (
     <AppLayout>
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-lg w-full px-4 space-y-5">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center gap-3 mb-1">
@@ -161,21 +161,17 @@ const Deposit = () => {
         </motion.div>
 
         {/* Trust Badges */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="grid grid-cols-3 gap-3">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="grid grid-cols-3 gap-2">
           {[
-            { icon: Shield, label: "SSL Encrypted", sub: "256-bit security", color: "text-success" },
-            { icon: Clock, label: "Fast Processing", sub: "Under 24 hours", color: "text-primary" },
-            { icon: Zap, label: "On-Chain Verified", sub: "Blockchain confirmed", color: "text-purple-400" },
+            { icon: Shield, label: "Encrypted", sub: "256-bit", color: "text-success" },
+            { icon: Clock, label: "Fast", sub: "Under 24h", color: "text-primary" },
+            { icon: Zap, label: "On-Chain", sub: "Verified", color: "text-purple-400" },
           ].map(b => (
             <Card key={b.label} className="bg-card/20 border-border/15">
-              <CardContent className="flex items-center gap-3 p-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-card/40 border border-border/20">
-                  <b.icon className={`h-4 w-4 ${b.color}`} />
-                </div>
-                <div>
-                  <p className="text-[11px] font-bold">{b.label}</p>
-                  <p className="text-[9px] text-muted-foreground/40">{b.sub}</p>
-                </div>
+              <CardContent className="p-3 text-center">
+                <b.icon className={`mx-auto h-4 w-4 ${b.color} mb-1`} />
+                <p className="text-[10px] font-bold">{b.label}</p>
+                <p className="text-[8px] text-muted-foreground/40">{b.sub}</p>
               </CardContent>
             </Card>
           ))}
@@ -400,7 +396,7 @@ const Deposit = () => {
                 <Info className="h-3.5 w-3.5 text-primary/60" />
                 <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/40">How Deposits Work</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-2.5">
                 {[
                   "Select your preferred cryptocurrency network",
                   "Enter the amount you wish to deposit in USD",
