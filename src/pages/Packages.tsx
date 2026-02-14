@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -12,23 +11,18 @@ import { TrendingUp, Shield, Zap, Check, Sparkles, DollarSign } from "lucide-rea
 import { motion } from "framer-motion";
 
 const packages = [
-  { name: "Micro", amount: 50, weeklyMin: 12, weeklyMax: 18, risk: "Low" },
-  { name: "Starter", amount: 100, weeklyMin: 15, weeklyMax: 22, risk: "Low" },
-  { name: "Basic", amount: 200, weeklyMin: 18, weeklyMax: 25, risk: "Medium" },
-  { name: "Standard", amount: 500, weeklyMin: 20, weeklyMax: 28, risk: "Medium" },
-  { name: "Professional", amount: 1000, weeklyMin: 22, weeklyMax: 32, risk: "Medium" },
-  { name: "Gold", amount: 2500, weeklyMin: 25, weeklyMax: 35, risk: "High" },
-  { name: "Platinum", amount: 5000, weeklyMin: 28, weeklyMax: 38, risk: "High" },
-  { name: "Diamond", amount: 10000, weeklyMin: 30, weeklyMax: 42, risk: "High" },
-  { name: "Elite", amount: 25000, weeklyMin: 32, weeklyMax: 45, risk: "Very High" },
-  { name: "Institutional", amount: 50000, weeklyMin: 35, weeklyMax: 50, risk: "Very High" },
+  { name: "Micro", amount: 50, weeklyMin: 18, weeklyMax: 25 },
+  { name: "Starter", amount: 100, weeklyMin: 20, weeklyMax: 30 },
+  { name: "Basic", amount: 200, weeklyMin: 22, weeklyMax: 32 },
+  { name: "Standard", amount: 500, weeklyMin: 25, weeklyMax: 35 },
+  { name: "Professional", amount: 1000, weeklyMin: 28, weeklyMax: 40 },
+  { name: "Gold", amount: 2500, weeklyMin: 30, weeklyMax: 42 },
+  { name: "Platinum", amount: 5000, weeklyMin: 32, weeklyMax: 45 },
+  { name: "Diamond", amount: 10000, weeklyMin: 35, weeklyMax: 48 },
+  { name: "Elite", amount: 25000, weeklyMin: 38, weeklyMax: 52 },
+  { name: "Institutional", amount: 50000, weeklyMin: 40, weeklyMax: 55 },
 ];
 
-const riskColor = (r: string) =>
-  r === "Low" ? "text-success border-success/20 bg-success/[0.08]" :
-  r === "Medium" ? "text-primary border-primary/20 bg-primary/[0.08]" :
-  r === "High" ? "text-destructive border-destructive/20 bg-destructive/[0.08]" :
-  "text-red-400 border-red-400/20 bg-red-400/[0.08]";
 
 const Packages = () => {
   const { profile, user, refreshProfile } = useAuth();
@@ -120,11 +114,10 @@ const Packages = () => {
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-sm font-bold">{pkg.name}</h3>
-                            <Badge variant="outline" className={`text-[9px] py-0 px-1.5 ${riskColor(pkg.risk)}`}>{pkg.risk}</Badge>
                             {isActive && (
-                              <Badge className="bg-primary/15 text-primary border border-primary/20 text-[9px] py-0">
+                              <span className="inline-flex items-center gap-0.5 bg-primary/15 text-primary border border-primary/20 text-[9px] py-0 px-1.5 rounded font-semibold">
                                 <Sparkles className="mr-0.5 h-2.5 w-2.5" /> Active
-                              </Badge>
+                              </span>
                             )}
                           </div>
                           <p className="text-2xl font-black text-primary">${pkg.amount.toLocaleString()}</p>
