@@ -12,7 +12,7 @@ const testimonials = [
   {
     name: "Sarah M.",
     role: "Professional Plan",
-    text: "What sold me was the transparency — every trade visible in real-time. Weekly payouts have been like clockwork, never missed a single one in 8 months.",
+    text: "What sold me was the transparency. Every trade visible in real-time. Weekly payouts have been like clockwork, never missed a single one in 8 months.",
     avatar: "SM",
     profit: "+$8,200",
   },

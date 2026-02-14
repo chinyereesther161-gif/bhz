@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { UserPlus, Wallet, Brain, TrendingUp } from "lucide-react";
 
 const steps = [
-  { icon: UserPlus, title: "Create Account", desc: "Sign up in seconds. Verified & ready instantly — no documents, no waiting.", color: "from-primary/20 to-primary/5" },
+  { icon: UserPlus, title: "Create Account", desc: "Sign up in seconds. Verified and ready instantly, no documents, no waiting.", color: "from-primary/20 to-primary/5" },
   { icon: Wallet, title: "Fund Your Account", desc: "Deposit via USDT, BTC, ETH, or SOL. Select the investment tier that fits your goals.", color: "from-success/20 to-success/5" },
   { icon: Brain, title: "AI Trades 24/7", desc: "Our neural engine scans 500+ markets, executing high-probability trades automatically.", color: "from-primary/20 to-primary/5" },
   { icon: TrendingUp, title: "Earn Weekly", desc: "Profits distributed every Monday. Withdraw to your wallet anytime with no lock-up.", color: "from-success/20 to-success/5" },

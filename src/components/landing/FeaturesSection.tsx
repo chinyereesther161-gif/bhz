@@ -5,7 +5,7 @@ const features = [
   {
     icon: Brain,
     title: "Neural Network Engine",
-    description: "Proprietary deep learning models process millions of market signals per second — identifying patterns invisible to human analysis.",
+    description: "Proprietary deep learning models process millions of market signals per second, identifying patterns invisible to human analysis.",
     highlight: true,
   },
   {
@@ -31,7 +31,7 @@ const features = [
   {
     icon: Wallet,
     title: "Weekly Distributions",
-    description: "Profits calculated and distributed every Monday. Withdraw to your crypto wallet anytime — no lock-ups.",
+    description: "Profits calculated and distributed every Monday. Withdraw to your crypto wallet anytime with no lock-ups.",
   },
 ];
 
@@ -55,7 +55,7 @@ const FeaturesSection = () => (
           <span className="text-gradient-gold">Available to Everyone</span>
         </h2>
         <p className="mt-4 text-muted-foreground/80 leading-relaxed max-w-lg">
-          The same AI technology used by hedge funds and prop desks — now accessible from a single dashboard.
+          The same AI technology used by hedge funds and prop desks, now accessible from a single dashboard.
         </p>
       </motion.div>
 

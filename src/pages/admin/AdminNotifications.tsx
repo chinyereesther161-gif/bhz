@@ -103,7 +103,7 @@ const AdminNotifications = () => {
                   }`}
                   onClick={() => setSelectedUserId(u.user_id)}
                 >
-                  {u.name} — {u.email}
+                  {u.name} · {u.email}
                 </div>
               ))}
             </div>

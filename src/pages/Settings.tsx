@@ -142,7 +142,7 @@ const Settings = () => {
                 { icon: Package, label: "Total Invested", value: `$${totalInvested.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, color: "text-primary" },
                 { icon: TrendingUp, label: "Weekly P&L", value: `${(profile?.weekly_pnl ?? 0) >= 0 ? "+" : ""}$${(profile?.weekly_pnl ?? 0).toFixed(2)}`, color: (profile?.weekly_pnl ?? 0) >= 0 ? "text-success" : "text-destructive" },
                 { icon: Package, label: "Active Plans", value: `${investments.length} plan${investments.length !== 1 ? "s" : ""}`, color: "text-foreground" },
-                { icon: Calendar, label: "Member Since", value: profile?.created_at ? new Date(profile.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "—", color: "text-foreground" },
+                { icon: Calendar, label: "Member Since", value: profile?.created_at ? new Date(profile.created_at).toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "-", color: "text-foreground" },
               ].map(item => (
                 <div key={item.label} className="flex items-center justify-between px-6 py-4">
                   <div className="flex items-center gap-2.5">
