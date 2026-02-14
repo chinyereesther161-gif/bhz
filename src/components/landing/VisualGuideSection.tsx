@@ -126,11 +126,16 @@ const VisualGuideSection = () => (
                       <div className="h-2 w-2 rounded-full bg-success/60" />
                       <span className="text-[8px] text-muted-foreground/40 ml-1.5">Capvest AI</span>
                     </div>
-                    <img
-                      src={s.screenshot}
-                      alt={`Step ${s.step}: ${s.title}`}
-                      className="w-full h-auto"
-                      loading="lazy"
+                    <div
+                      className="w-full h-auto select-none pointer-events-none"
+                      style={{
+                        backgroundImage: `url(${s.screenshot})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        aspectRatio: '16/9',
+                      }}
+                      role="img"
+                      aria-label={`Step ${s.step}: ${s.title}`}
                     />
                   </div>
                 </div>
